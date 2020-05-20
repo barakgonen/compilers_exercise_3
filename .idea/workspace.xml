@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:barakg" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated>
+      <config projectName="untitled" targetName="compiler" />
+    </generated>
+  </component>
+  <component name="CMakeSettings" AUTO_RELOAD="true">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="af59952d-57ea-4e31-bb3d-b598718e6160" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1aokvwjQPp8tQxHC08wYaYImGur" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="cf.first.check.clang-format" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="CLionExternalConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\barak\Documents\HaifaUniversity\Compilers\barakLihiPCodeGen" />
+    </key>
+  </component>
+  <component name="RunManager" selected="CMake Application.compiler">
+    <configuration name="Unnamed" type="CLionExternalRunConfiguration" factoryName="Application" nameIsGenerated="true" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_PATH="$PROJECT_DIR$/compiler_files/ctree.c" EXPLICIT_BUILD_TARGET_NAME="all">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="compiler" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-Pcode ../Input_Files/HW2/sample14.c" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="untitled" RUN_TARGET_NAME="compiler" EXPLICIT_BUILD_TARGET_NAME="all">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Custom Build Application.Unnamed" />
+      <item itemvalue="CMake Application.compiler" />
+    </list>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="af59952d-57ea-4e31-bb3d-b598718e6160" name="Default Changelist" comment="" />
+      <created>1587409568181</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1587409568181</updated>
+      <workItem from="1587409571447" duration="902000" />
+      <workItem from="1587727450014" duration="24178000" />
+      <workItem from="1587755767602" duration="866000" />
+      <workItem from="1587792426263" duration="33707000" />
+      <workItem from="1587827511413" duration="116000" />
+      <workItem from="1587827711291" duration="9997000" />
+      <workItem from="1587874277306" duration="10569000" />
+      <workItem from="1587913423464" duration="16799000" />
+      <workItem from="1587962257327" duration="42193000" />
+      <workItem from="1588011001739" duration="4173000" />
+      <workItem from="1588229549380" duration="84000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2595" y="288" key="#Unnamed" timestamp="1587727680375">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state x="2595" y="288" key="#Unnamed/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1587727680375" />
+    <state x="2308" y="293" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1588010646632">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state x="2308" y="293" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1588010646632" />
+    <state x="2660" y="285" key="#com.intellij.ide.macro.MacrosDialog" timestamp="1587727707389">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state x="2660" y="285" key="#com.intellij.ide.macro.MacrosDialog/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1587727707389" />
+    <state x="2479" y="341" key="#xdebugger.XInspectDialog" timestamp="1587797861896">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state x="2479" y="341" key="#xdebugger.XInspectDialog/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1587797861896" />
+    <state x="2236" y="443" key="#xdebugger.evaluate" timestamp="1587997255117">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state x="2236" y="443" key="#xdebugger.evaluate/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1587997255117" />
+    <state width="639" height="1158" key="DebuggerActiveHint" timestamp="1588014901655">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state width="639" height="1158" key="DebuggerActiveHint/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1588014901655" />
+    <state x="-1180" y="301" key="FileChooserDialogImpl" timestamp="1588229625993">
+      <screen x="-1920" y="1" width="1920" height="1040" />
+    </state>
+    <state x="-1180" y="301" key="FileChooserDialogImpl/0.0.1280.680/-1920.1.1920.1040@-1920.1.1920.1040" timestamp="1588229625993" />
+    <state x="2660" y="335" key="FileChooserDialogImpl/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1587727547912" />
+    <state width="1165" height="569" key="GridCell.Tab.0.bottom" timestamp="1588015024466">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state width="1165" height="569" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1588015024466" />
+    <state width="1165" height="569" key="GridCell.Tab.0.center" timestamp="1588015024465">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state width="1165" height="569" key="GridCell.Tab.0.center/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1588015024465" />
+    <state width="1165" height="569" key="GridCell.Tab.0.left" timestamp="1588015024465">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state width="1165" height="569" key="GridCell.Tab.0.left/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1588015024465" />
+    <state width="1165" height="569" key="GridCell.Tab.0.right" timestamp="1588015024465">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state width="1165" height="569" key="GridCell.Tab.0.right/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1588015024465" />
+    <state width="1165" height="328" key="GridCell.Tab.1.bottom" timestamp="1588014906768">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state width="1165" height="328" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1588014906768" />
+    <state width="1165" height="328" key="GridCell.Tab.1.center" timestamp="1588014906768">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state width="1165" height="328" key="GridCell.Tab.1.center/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1588014906768" />
+    <state width="1165" height="328" key="GridCell.Tab.1.left" timestamp="1588014906768">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state width="1165" height="328" key="GridCell.Tab.1.left/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1588014906768" />
+    <state width="1165" height="328" key="GridCell.Tab.1.right" timestamp="1588014906768">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state width="1165" height="328" key="GridCell.Tab.1.right/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1588014906768" />
+    <state x="2387" y="229" key="SettingsEditor" timestamp="1587727667796">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state x="2387" y="229" key="SettingsEditor/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1587727667796" />
+    <state x="2550" y="675" width="550" height="416" key="refactoring.ChangeSignatureDialog" timestamp="1587838627643">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state x="2550" y="675" width="550" height="416" key="refactoring.ChangeSignatureDialog/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1587838627643" />
+    <state x="2536" y="270" key="run.anything.popup" timestamp="1587916566114">
+      <screen x="1920" y="0" width="1920" height="1160" />
+    </state>
+    <state x="2536" y="270" key="run.anything.popup/0.0.1280.680/1920.0.1920.1160@1920.0.1920.1160" timestamp="1587916566114" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/compiler_files/CodeGenerator.c</url>
+          <line>254</line>
+          <option name="timeStamp" value="207" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <condition expression="root-&gt;hdr.line == 315" language="ObjectiveC" />
+          <url>file://$PROJECT_DIR$/compiler_files/CodeGenerator.c</url>
+          <line>1321</line>
+          <option name="timeStamp" value="363" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <condition expression="root-&gt;hdr.line == 15" language="ObjectiveC" />
+          <url>file://$PROJECT_DIR$/compiler_files/CodeGenerator.c</url>
+          <line>973</line>
+          <option name="timeStamp" value="364" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="CMakeRunConfiguration">
+        <watch expression="get_array_identifier(root)" language="ObjectiveC" />
+        <watch expression="get_array_indexes(root)" language="ObjectiveC" />
+        <watch expression="get_array_dimensions(root)" language="ObjectiveC" />
+        <watch expression="array_size" language="ObjectiveC" />
+        <watch expression="current_dimension" language="ObjectiveC" />
+        <watch expression="struct_name" language="ObjectiveC" />
+        <watch expression="((leafnode*)root-&gt;rnode-&gt;rnode)-&gt;data.sval-&gt;str" language="ObjectiveC" />
+        <watch expression="struct_name" language="ObjectiveC" />
+        <watch expression="symbolTalble-&gt;variables_counter" language="ObjectiveC" />
+        <watch expression="current_dimension" language="ObjectiveC" />
+        <watch expression="get_n_dimension(bla, index)" language="ObjectiveC" />
+      </configuration>
+    </watches-manager>
+  </component>
+</project>
