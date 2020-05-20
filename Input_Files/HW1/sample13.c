@@ -4,7 +4,7 @@ void main() {
     double x = 1;
     float y = 1.1;
     double z = 1.12345678;
-    //	+=
+
     x += 1;
     printf("%f\n", x);
     y += 1.00005;
@@ -15,7 +15,6 @@ void main() {
 	y += x;
 	printf("%f\n", y);
 
-    //	-=
     x = 10;
     x -= x - 1;
     printf("%f\n", x);
@@ -23,7 +22,7 @@ void main() {
     printf("%f\n", y);
     z -= -2.343;
     printf("%f\n", z);
-    //	*=
+
     x *= x * (-1);
     printf("%f\n", x);
     y *= 2.45;
@@ -31,14 +30,12 @@ void main() {
     z *= -0.45;
     printf("%f\n", z);
 
-    //	/=
     x /= x;
     printf("%f\n", x);
     y /= (1 + !y);
     printf("%f\n", y);
     z /= ((!z + 5.2) * 4) / y;
     printf("%f\n", z);
-    //	coomplex conditions
     x *= (y || 2);
     printf("%f\n", x);
     y += x || ((z || y) + 87);

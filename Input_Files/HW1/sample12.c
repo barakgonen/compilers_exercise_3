@@ -14,7 +14,7 @@ void main() {
 	x = x && y;
 	printf("%d\n", x);
 	y = y && x;
-	// x = x == y;
+	x = x == y;
 	printf("%f\n", y);
 	x = x == y;
 	printf("%d\n", x);
@@ -24,21 +24,18 @@ void main() {
 	printf("%f\n", z);
 	z = !((x || y) == (z && x));
 	printf("%f\n", z);
-	//	N-EQU
 	x = x != y;
 	printf("%d\n", x);
 	y = x != (z == y);
 	printf("%f\n", y);
 	z = (x != y) != (z != x);
 	printf("%f\n", z);
-	// //	GRT
 	x = x > y;
 	printf("%d\n", x);
 	y = x < (z > y);
 	printf("%f\n", y);
 	z = (x != y) > (z != x);
 	printf("%f\n", z);
-	//	LESS
 	x = x < y;
 	printf("%d\n", x);
 	y = x < (z < y);
@@ -47,20 +44,17 @@ void main() {
 	printf("%f\n", z);
 	x = x < y;
 	printf("%d\n", x);
-	//	GREQ
 	printf("%f\n", x);
 	y = x < (z <= y);
 	printf("%f\n", y);
 	z = (x <= y) > (z <= x);
 	printf("%f\n", z);
-	//	LESSEQ
 	x = x <= y;
 	printf("%d\n", x);
 	y = x < (z <= y);
 	printf("%f\n", y);
 	z = (x <= y) >= (z < x);
 	printf("%f\n", z);
-	// INC
 	printf("%d\n", x);
 	x = x++;
 	printf("%d\n", x);
@@ -84,7 +78,6 @@ void main() {
 	printf("%f\n", z);
 	++z;
 	printf("%f\n", z);
-	// DEC
 	x = x--;
 	printf("%d\n", x);
 	x--;

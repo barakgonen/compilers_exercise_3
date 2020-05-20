@@ -4,9 +4,8 @@ void main() {
     double x = 1;
     double a;
     float y = 7.7;
-    // double z = 1.12345678;
+    double z = 1.12345678;
     double b;
-    // double c= -345.12;
     printf("%f\n", x);
     printf("%f\n", y);
     x = ++y;
@@ -50,17 +49,17 @@ void main() {
     printf("%f\n", b);
     printf("%f\n", a);
     if (a <= b)
-        printf("%f\n", a * 4); //print 4.00
+        printf("%f\n", a * 4);
     if (a >= b)
-        printf("%f\n", a * 4); //print 4.00
+        printf("%f\n", a * 4);
     printf("%f\n", b);
     printf("%f\n", a);
     if (a >= b)
-        printf("%f\n", a * b); //print 4.00
+        printf("%f\n", a * b);
     if (a >= b)
-        printf("%f\n", b * a); //print 4.00
+        printf("%f\n", b * a);
     if (a >= b)
-        printf("%f\n", 4 * a); //print 4.00
+        printf("%f\n", 4 * a);
     printf("%f\n", x);
     x = y++;
     printf("%f\n", y);
@@ -75,7 +74,6 @@ void main() {
     printf("%f\n", a);
     printf("%f\n",a--);
     printf("%f\n", a);
-    // MUL by neg
     b = b * -1.1212;
     printf("%f\n", b);
     b = -23213.3243 * b;
@@ -84,7 +82,6 @@ void main() {
     printf("%f\n", b);
     b = (-b) * (-(-b));
     printf("%f\n", b);
-    // DIV by neg
     b -= -b/(-234.43);
     printf("%f\n", b);
     x = 10;

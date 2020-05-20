@@ -4,18 +4,18 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "C:/git_projects/compilers_exercise_3/compiler_files/CodeGenerator.c" "C:/git_projects/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/CodeGenerator.c.obj"
-  "C:/git_projects/compilers_exercise_3/compiler_files/ctree.c" "C:/git_projects/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/ctree.c.obj"
-  "C:/git_projects/compilers_exercise_3/compiler_files/dsm_extension.c" "C:/git_projects/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/dsm_extension.c.obj"
-  "C:/git_projects/compilers_exercise_3/compiler_files/gram.c" "C:/git_projects/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/gram.c.obj"
-  "C:/git_projects/compilers_exercise_3/compiler_files/heap.c" "C:/git_projects/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/heap.c.obj"
-  "C:/git_projects/compilers_exercise_3/compiler_files/lexer.c" "C:/git_projects/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/lexer.c.obj"
-  "C:/git_projects/compilers_exercise_3/compiler_files/nmetab.c" "C:/git_projects/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/nmetab.c.obj"
-  "C:/git_projects/compilers_exercise_3/compiler_files/prnttree.c" "C:/git_projects/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/prnttree.c.obj"
-  "C:/git_projects/compilers_exercise_3/compiler_files/symtab.c" "C:/git_projects/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/symtab.c.obj"
-  "C:/git_projects/compilers_exercise_3/compiler_files/token.c" "C:/git_projects/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/token.c.obj"
-  "C:/git_projects/compilers_exercise_3/compiler_files/tree.c" "C:/git_projects/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/tree.c.obj"
-  "C:/git_projects/compilers_exercise_3/compiler_files/treestk.c" "C:/git_projects/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/treestk.c.obj"
+  "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/compiler_files/CodeGenerator.c" "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/CodeGenerator.c.obj"
+  "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/compiler_files/ctree.c" "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/ctree.c.obj"
+  "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/compiler_files/dsm_extension.c" "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/dsm_extension.c.obj"
+  "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/compiler_files/gram.c" "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/gram.c.obj"
+  "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/compiler_files/heap.c" "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/heap.c.obj"
+  "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/compiler_files/lexer.c" "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/lexer.c.obj"
+  "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/compiler_files/nmetab.c" "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/nmetab.c.obj"
+  "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/compiler_files/prnttree.c" "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/prnttree.c.obj"
+  "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/compiler_files/symtab.c" "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/symtab.c.obj"
+  "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/compiler_files/token.c" "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/token.c.obj"
+  "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/compiler_files/tree.c" "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/tree.c.obj"
+  "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/compiler_files/treestk.c" "C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir/compiler_files/treestk.c.obj"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 

@@ -1,3 +1,3 @@
-C:/git_projects/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir
-C:/git_projects/compilers_exercise_3/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/git_projects/compilers_exercise_3/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/cmake-build-debug/CMakeFiles/compiler.dir
+C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/barak/Documents/HaifaUniversity/Compilers/compilers_exercise_3/cmake-build-debug/CMakeFiles/rebuild_cache.dir

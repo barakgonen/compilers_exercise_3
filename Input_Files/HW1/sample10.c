@@ -12,10 +12,10 @@ void main() {
 	d *= a;
 	e /= b;
 
-	printf("%d\n", a);			// V
-	printf("%d\n", c);			// V
-	printf("%d\n", d);			// V
-	printf("%d\n", e);			// V
-	printf("%d\n", b);			// V
+	printf("%d\n", a);
+	printf("%d\n", c);
+	printf("%d\n", d);
+	printf("%d\n", e);
+	printf("%d\n", b);
 	return;
 }
