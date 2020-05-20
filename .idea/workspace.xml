@@ -89,8 +89,8 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Custom Build Application.Unnamed" />
       <item itemvalue="CMake Application.compiler" />
+      <item itemvalue="Custom Build Application.Unnamed" />
     </list>
   </component>
   <component name="SvnConfiguration">
