@@ -1342,8 +1342,8 @@ YY_RULE_SETUP
 #line 205 "lexer.l"
 { /* Ambiguous C++ style comment, must parse as
                             '/' '/*' to be Ansi compliant */
-                         yywarn(
-                            "Ambiguous C++ comment, use '/ /*' -or- '// *'");
+//                         yywarn(
+//                            "Ambiguous C++ comment, use '/ /*' -or- '// *'");
                          yyless(1);
                          SETPOS_NDE(DIV);
                          return(DIV);
@@ -1360,7 +1360,7 @@ YY_RULE_SETUP
 { /* C++ style comment */
                          if (cpp_comment_warn){
                              cpp_comment_warn = 0;
-                             yywarn("C++ style comment encountered");
+//                             yywarn("C++ style comment encountered");
                          }
                      }
 	YY_BREAK

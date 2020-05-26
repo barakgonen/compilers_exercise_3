@@ -1,4 +1,3 @@
 *.exe
 .vs/*
 .vscode/*
-/cmake-build-debug/
