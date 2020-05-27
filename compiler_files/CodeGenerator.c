@@ -5,6 +5,10 @@
 
 #define NR_BUCKETS 1024
 
+#define bool int
+#define true 1
+#define false 0
+
 typedef struct arrayObject *arrayObjectPtr;
 typedef struct arrayObject {
     char key[500];
@@ -239,17 +243,6 @@ int get_variable_size(char *identifier) {
     return -2;
 }
 
-tn_t get_variable_type_from_symbol_table(char *identifier) {
-    // printf("id is: %s\n", identifier);
-    varPtr curNode;
-    curNode = symbolTalble->vars;
-
-    // Iterate till last element until key is not found
-    while (curNode != NULL && strcmp(curNode->str, identifier) != 0)
-        curNode = curNode->next;
-    return (curNode != NULL) ? curNode->type : -1;
-}
-
 void reverse_string(char *str) {
     int i, end_index;
     char temp;
@@ -403,35 +396,6 @@ char *get_array_identifier(treenode *root) {
     return blaaa;
 }
 
-char *get_array_indexes(treenode *root) {
-    treenode *tracker = root;
-    char array_indexes[500] = "";
-    char indexStringBuffer[50] = "";
-    while (tracker != NULL &&
-           tracker->lnode != NULL &&
-           tracker->rnode != NULL &&
-           tracker->hdr.which != LEAF_T && tracker->rnode->hdr.which == LEAF_T) {
-        strcpy(indexStringBuffer, "");
-        switch (((leafnode *) tracker->rnode)->hdr.type) {
-            case TN_INT:
-                itoa(((leafnode *) tracker->rnode)->data.cval, indexStringBuffer, 10);
-                break;
-            case TN_IDENT:
-                itoa(get_variable_from_table(((leafnode *) tracker->rnode)->data.sval->str), indexStringBuffer, 10);
-                break;
-            default:
-                printf("Unhandled inner [] type. type is: %d\n", ((leafnode *) tracker->rnode)->hdr.type);
-                break;
-        }
-        strncat(array_indexes, &indexStringBuffer, strlen(indexStringBuffer));
-        strncat(array_indexes, &SUPPERATOR, 1);
-
-        tracker = tracker->lnode;
-    }
-    char *bla = array_indexes;
-    return bla;
-}
-
 void set_node_dimension(treenode *root) {
     current_dimension = 0;
     treenode *tracker = root;
@@ -443,10 +407,84 @@ void set_node_dimension(treenode *root) {
     }
 }
 
-int should_print_ind(treenode *root) {
-    return root->hdr.type != TN_INT && root->hdr.type != TN_REAL;
+bool is_constant(const treenode* root) {
+    if (root != NULL && root->rnode != NULL && root->lnode != NULL){
+        treenode* left = root->lnode;
+        treenode* right = root->rnode;
+        // first case: 5 + 3
+        if ((left->hdr.which == LEAF_T && left->hdr.which == TN_INT || left->hdr.which == TN_REAL) &&
+                (right->hdr.which == LEAF_T && right->hdr.which == TN_INT || left->hdr.which == TN_REAL))
+            return true;
+            // second: 0 + x
+            // third: x + 0
+            return true;
+
+    }
+    return false;
 }
 
+bool both_childs_are_leafs(const treenode* root) {
+    return root != NULL && root->rnode != NULL && root->lnode != NULL && root->rnode->hdr.which == LEAF_T && root->lnode->hdr.which == LEAF_T;
+}
+
+int node_int_val(const leafnode* leaf) {
+    return leaf->data.ival;
+}
+
+float node_float_val(const leafnode* leaf) {
+    return leaf->data.fval;
+}
+
+double node_double_val(const leafnode* leaf) {
+    return leaf->data.dval;
+}
+
+bool has_immidiate_expression(const treenode* root) {
+    return both_childs_are_leafs(root);
+}
+
+const char* get_immidiate_value(const treenode* root){
+    leafnode* left = root->lnode;
+    leafnode* right = root->rnode;
+    char result[50];
+    memset(result, 0, sizeof(result));
+
+    if (left->hdr.type == TN_INT && right->hdr.type == TN_INT) {
+        int leftChildVal = left->data.ival;
+        int rightChildVal = right->data.ival;
+        itoa(leftChildVal - rightChildVal, result, 10);
+    }
+    else if (left->hdr.type == TN_REAL && right->hdr.type == TN_REAL) {
+        double leftChildVal = left->data.ival;
+        double rightChildVal = right->data.ival;
+        itoa(leftChildVal - rightChildVal, result, 10);
+    }
+    else if (left->hdr.type == TN_REAL && right->hdr.type == TN_INT) {
+        double leftChildVal = left->data.ival;
+        int rightChildVal = right->data.ival;
+        itoa(leftChildVal - rightChildVal, result, 10);
+    }
+    else if (left->hdr.type == TN_INT && right->hdr.type == TN_REAL) {
+        int leftChildVal = left->data.ival;
+        double rightChildVal = right->data.ival;
+        itoa(leftChildVal - rightChildVal, result, 10);
+    }
+
+    result[strcspn(result,"\n")] = 0;
+    char* res = result;
+    return res;
+}
+
+// returns true weather right operand is 0, for cases such as a -= 0
+bool is_right_operand_is_zero(const treenode* root) {
+    return (root->rnode != NULL && ((leafnode*)root->rnode)->data.ival == 0);
+}
+
+// returns true weather right operand is 1, for cases such as a *= 1
+bool is_right_operand_is_one(const treenode* root) {
+    return (root->rnode != NULL && ((leafnode*)root->rnode)->data.ival == 1 ||
+            ((leafnode*)root->rnode)->data.ival == 0);
+}
 /*
 *	This recursive function is the main method for Code Generation
 *	Input: treenode (AST)
@@ -1008,74 +1046,83 @@ int code_recur(treenode *root) {
                         case PLUS_EQ:
                             /* Plus equal assignment "+=" */
                             /* e.g. x += 5; */
-                            code_recur(root->lnode);
-                            if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT) {
-                                leaf = (leafnode *) root->lnode;
-                                printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
-                                printf("IND\n");
+                            if (!is_right_operand_is_zero(root)) {
+                                code_recur(root->lnode);
+                                if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT) {
+                                    leaf = (leafnode *) root->lnode;
+                                    printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
+                                    printf("IND\n");
+                                }
+                                code_recur(root->rnode);
+                                if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
+                                    leaf = (leafnode *) root->rnode;
+                                    //                                printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
+                                    printf("IND\n");
+                                }
+                                printf("ADD\n");
+                                printf("STO\n");
                             }
-                            code_recur(root->rnode);
-                            if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
-                                leaf = (leafnode *) root->rnode;
-//                                printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
-                                printf("IND\n");
-                            }
-                            printf("ADD\n");
-                            printf("STO\n");
                             break;
                         case MINUS_EQ:
                             /* Minus equak assigment "-=" */
                             /* e.g. x-= 5; */
-                            code_recur(root->lnode);
-                            if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT) {
-                                leaf = (leafnode *) root->lnode;
-                                printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
-                                printf("IND\n");
-                            }
-                            code_recur(root->rnode);
-                            if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
-                                leaf = (leafnode *) root->rnode;
+                            if (!is_right_operand_is_zero(root))
+                            {
+                                code_recur(root->lnode);
+                                if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT) {
+                                    leaf = (leafnode *) root->lnode;
+                                    printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
+                                    printf("IND\n");
+                                }
+                                code_recur(root->rnode);
+                                if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
+                                    leaf = (leafnode *) root->rnode;
 //                                printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
-                                printf("IND\n");
+                                    printf("IND\n");
+                                }
+                                printf("SUB\n");
+                                printf("STO\n");
                             }
-                            printf("SUB\n");
-                            printf("STO\n");
                             break;
                         case STAR_EQ:
                             /* Multiply equal assignment "*=" */
                             /* e.g. x *= 5; */
-                            code_recur(root->lnode);
-                            if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT) {
-                                leaf = (leafnode *) root->lnode;
-                                printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
-                                printf("IND\n");
-                            }
-                            code_recur(root->rnode);
-                            if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
-                                leaf = (leafnode *) root->rnode;
+                            if (!is_right_operand_is_one(root)){
+                                code_recur(root->lnode);
+                                if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT) {
+                                    leaf = (leafnode *) root->lnode;
+                                    printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
+                                    printf("IND\n");
+                                }
+                                code_recur(root->rnode);
+                                if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
+                                    leaf = (leafnode *) root->rnode;
 //                                printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
-                                printf("IND\n");
+                                    printf("IND\n");
+                                }
+                                printf("MUL\n");
+                                printf("STO\n");
                             }
-                            printf("MUL\n");
-                            printf("STO\n");
                             break;
                         case DIV_EQ:
                             /* Divide equal assignment "/=" */
                             /* e.g. x /= 5; */
-                            code_recur(root->lnode);
-                            if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT) {
-                                leaf = (leafnode *) root->lnode;
-                                printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
-                                printf("IND\n");
+                            if (!is_right_operand_is_one(root)) {
+                                code_recur(root->lnode);
+                                if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT) {
+                                    leaf = (leafnode *) root->lnode;
+                                    printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
+                                    printf("IND\n");
+                                }
+                                code_recur(root->rnode);
+                                if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
+                                    leaf = (leafnode *) root->rnode;
+    //                                printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
+                                    printf("IND\n");
+                                }
+                                printf("DIV\n");
+                                printf("STO\n");
                             }
-                            code_recur(root->rnode);
-                            if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
-                                leaf = (leafnode *) root->rnode;
-//                                printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
-                                printf("IND\n");
-                            }
-                            printf("DIV\n");
-                            printf("STO\n");
                             break;
                         default:
                             printf("BUG, didn't handle assigment token: %d\n, ", root->hdr.tok);
@@ -1100,13 +1147,6 @@ int code_recur(treenode *root) {
                                        root->rnode != NULL &&
                                        root->rnode->hdr.type == TN_IDENT) {
                                 leaf = (leafnode *) root->rnode;
-//                                printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
-//                                printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
-//                                printf("IND\n");
-//                                printf("INC 1\n");
-//                                printf("STO\n");
-//                                printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
-//                                printf("IND\n");
                                 printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
                                 printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
                                 printf("IND\n");
@@ -1213,18 +1253,23 @@ int code_recur(treenode *root) {
                         case MINUS:
                             /* Minus token "-" */
                             /* e.g. x-y; */
-                            code_recur(root->lnode);
-                            if (root->lnode != NULL &&
-                                root->lnode->hdr.type == TN_IDENT)
-                                printf("IND\n");
-                            code_recur(root->rnode);
-                            if (root->rnode != NULL &&
-                                root->rnode->hdr.type == TN_IDENT)
-                                printf("IND\n");
-                            if (root->lnode == NULL)
-                                printf("NEG\n");
-                            else
-                                printf("SUB\n");
+                            if (has_immidiate_expression(root)) {
+                                printf("%s\n", get_immidiate_value(root));
+                            } else{
+                                code_recur(root->lnode);
+                                if (root->lnode != NULL &&
+                                    root->lnode->hdr.type == TN_IDENT)
+                                    printf("IND\n");
+                                code_recur(root->rnode);
+                                if (root->rnode != NULL &&
+                                    root->rnode->hdr.type == TN_IDENT)
+                                    printf("IND\n");
+                                if (root->lnode == NULL)
+                                    printf("NEG\n");
+                                else
+                                    printf("SUB\n");
+
+                            }
                             break;
 
                         case DIV:
