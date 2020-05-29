@@ -8,7 +8,7 @@ void main() {
 	a = 1;
 	b = 3;
 	printf("%d\n", x);
-	x += ((5 + 3 - 2 * 7) * 0); 
+	x += ((5 + 3 - 2 * 7) * 0);
 	printf("%d\n", x);
 	x *= (15 - 14);
 	printf("%d\n", x);
