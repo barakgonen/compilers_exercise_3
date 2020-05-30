@@ -469,7 +469,7 @@ const char *get_immidiate_value(const treenode *root) {
 bool is_immediate_value(treenode *root) {
     if (root == NULL || (((leafnode *) (root))->hdr.type == TN_INT || ((leafnode *) (root))->hdr.type == TN_REAL))
         return true;
-    if (root->hdr.type != TN_INT && root->hdr.type != TN_REAL && root->hdr.type != TN_EXPR)
+    if (root->hdr.type != TN_INT && root->hdr.type != TN_REAL && root->hdr.type != TN_EXPR && root->hdr.type != TN_COND_EXPR)
         return false;
     return (is_immediate_value(root->lnode) && is_immediate_value(root->rnode));
 }
@@ -478,6 +478,7 @@ float evaluate_expression(treenode *root) {
     float evaluated_expression = 0;
     float leftSubtreeVal, rightSubtreeVal;
     leafnode *leaf;
+    if_node *ifn;
     if (!root)
         return evaluated_expression;
 
@@ -572,8 +573,63 @@ float evaluate_expression(treenode *root) {
 //                    printf("UNHANDLED TYPE: %d\n", root->hdr.tok);
             }
             break;
+        case IF_T:
+            ifn = (if_node *) root;
+            switch (ifn->hdr.type) {
+                case TN_IF:
+                    if (ifn->else_n == NULL) {
+                        /* if case */
+                        code_recur(ifn->cond);
+                        switch (ifn->cond->hdr.type) {
+                            case TN_IDENT:
+                                leaf = (leafnode *) ifn->cond;
+//                                printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
+                                printf("IND\n");
+                                break;
+                            default:
+                                // printf("BBBBB\n type is: %d\n", ifn->cond->hdr.which);
+                                break;
+                        }
+                        printf("FJP end_if_%d\n", root->hdr.line);
+                        code_recur(ifn->then_n);
+                        printf("end_if_%d%s\n", root->hdr.line, ":");
+                    } else {
+                        code_recur(ifn->cond);
+                        printf("FJP else_%d\n", root->hdr.line);
+                        code_recur(ifn->then_n);
+                        printf("ujp end_%d\n", root->hdr.line);
+                        printf("else_%d%s\n", root->hdr.line, ":");
+                        code_recur(ifn->else_n);
+                        printf("end_%d%s\n", root->hdr.line, ":");
+                    }
+
+                    return 0;
+
+                case TN_COND_EXPR:
+                    switch(ifn->cond->hdr.type){
+                        case TN_EXPR:
+                            if (evaluate_expression(ifn->cond) != 0)
+                                return evaluate_expression(ifn->then_n);
+                            else
+                                return evaluate_expression(ifn->else_n);
+                            break;
+                        case TN_INT:
+                            if (((leafnode*)ifn->cond)->data.ival != 0)
+                                return ((leafnode*)ifn->then_n)->data.ival;
+                            else
+                                return ((leafnode*)ifn->else_n)->data.ival;
+                            break;
+                        case TN_REAL:
+                            if (((leafnode*)ifn->cond)->data.dval != 0)
+                                return ((leafnode*)ifn->then_n)->data.dval;
+                            else
+                                return ((leafnode*)ifn->else_n)->data.dval;
+                            break;
+                    }
+                    break;
+            }
+            return evaluated_expression;
     }
-    return evaluated_expression;
 }
 
 // returns true weather right operand is 0, for cases such as a -= 0
@@ -863,14 +919,20 @@ int code_recur(treenode *root) {
                     return 0;
 
                 case TN_COND_EXPR:
-                    code_recur(ifn->cond);
-                    printf("FJP else_condition_%d%s%d\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col);
-                    code_recur(ifn->then_n);
-                    printf("ujp after_condition_%d%s%d\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col);
-                    printf("else_condition_%d%s%d%s\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col, ":");
-                    code_recur(ifn->else_n);
-                    printf("ujp after_condition_%d%s%d\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col);
-                    printf("after_condition_%d%s%d%s\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col, ":");
+                    if (evaluate_expression(ifn->cond) != 0){
+                        code_recur(ifn->then_n);
+                    }
+                    else{
+                        code_recur(ifn->else_n);
+                    }
+//                    code_recur(ifn->cond);
+//                    printf("FJP else_condition_%d%s%d\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col);
+//                    code_recur(ifn->then_n);
+//                    printf("ujp after_condition_%d%s%d\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col);
+//                    printf("else_condition_%d%s%d%s\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col, ":");
+//                    code_recur(ifn->else_n);
+//                    printf("ujp after_condition_%d%s%d\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col);
+//                    printf("after_condition_%d%s%d%s\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col, ":");
                     break;
 
                 default:
@@ -1297,7 +1359,16 @@ int code_recur(treenode *root) {
                         case PLUS_EQ:
                             /* Plus equal assignment "+=" */
                             /* e.g. x += 5; */
-                            if (is_immediate_value(root->rnode) && is_sub_tree_value_is_zero(root->rnode)) {
+                            if (is_immediate_value(root->rnode)) {
+                                if (is_sub_tree_value_is_zero(root->rnode)) {
+                                    break;
+                                }else{
+                                    code_recur(root->lnode);
+                                    print_ident_address(root);
+                                    print_immediate_sub_tree(root->rnode);
+                                    printf("ADD\n");
+                                    printf("STO\n");
+                                }
                             } else {
                                 code_recur(root->lnode);
                                 if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT) {
@@ -1322,7 +1393,8 @@ int code_recur(treenode *root) {
                         case MINUS_EQ:
                             /* Minus equal assigment "-=" */
                             /* e.g. x-= 5; */
-                            if (is_immediate_value(root->rnode) && is_sub_tree_value_is_zero(root->rnode)) {
+                            if (evaluate_expression(root->rnode) == 0 ||
+                                (is_immediate_value(root->rnode) && is_sub_tree_value_is_zero(root->rnode))) {
                             }
                             else {
                                     code_recur(root->lnode);
@@ -1583,6 +1655,22 @@ int code_recur(treenode *root) {
                             while (root->lnode != NULL && root->lnode->lnode != NULL &&
                                    root->rnode != NULL && can_reduce_fractures(root))
                                 root = root->lnode->lnode;
+                            if (is_sub_tree_value_is_zero(root)) {
+                                if (evaluate_expression(root) == INT_MAX)
+                                    print_ident_address(root);
+                                else
+                                    printf("LDC 0\n");
+                                break;
+                            }
+                            if (is_right_operand_is_one(root->rnode)){
+                                print_ident_address(root);
+                                if (evaluate_expression(root->rnode) != INT_MAX){
+                                    print_immediate_sub_tree(root->rnode);
+                                    print_correct_method(root);
+                                }
+
+                                break;
+                            }
                             if (root->hdr.which == LEAF_T){
                                 code_recur(root);
                                 printf("IND\n");

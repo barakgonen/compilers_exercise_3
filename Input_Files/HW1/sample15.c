@@ -2,10 +2,9 @@
 
 void main() {
     double x = 1;
-    double a;
+    float a;
     float y = 7.7;
-    double z = 1.12345678;
-    double b;
+    float b;
     printf("%f\n", x);
     printf("%f\n", y);
     x = ++y;
@@ -40,6 +39,8 @@ void main() {
     printf("%f\n", a);
     b = a * 5;
     printf("%f\n", b);
+    a = 12;
+    b = 24.5;
     b *= a;
     printf("%f\n", b);
     printf("%f\n", a);
@@ -74,7 +75,8 @@ void main() {
     printf("%f\n", a);
     b = b * -1.1;
     printf("%f\n", b);
-    b = -23213 * b;
+    b = 1.5;
+    b = -2.5 * b;
     printf("%f\n", b);
     x *= (b*-213) + 16;
     printf("%f\n", b);
