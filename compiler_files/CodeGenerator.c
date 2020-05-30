@@ -1261,7 +1261,7 @@ int code_recur(treenode *root) {
                                 // because of c++ and c diffrences: x=x++ increments x in c++ and does nothing in c
                             } else if (root->rnode != NULL && is_immediate_value(root->rnode)) {
                                 code_recur(root->lnode);
-                                print_immediate_sub_tree(root);
+                                print_immediate_sub_tree(root->rnode);
                                 printf("STO\n");
                                 break;
                             } else {
@@ -1306,7 +1306,7 @@ int code_recur(treenode *root) {
                                     printf("IND\n");
                                 }
                                 if (root->rnode != NULL && is_immediate_value(root->rnode)) {
-                                    print_immediate_sub_tree(root);
+                                    print_immediate_sub_tree(root->rnode);
                                 }
                                 else {
                                     code_recur(root->rnode);
@@ -1332,7 +1332,7 @@ int code_recur(treenode *root) {
                                         printf("IND\n");
                                     }
                                     if (root->rnode != NULL && is_immediate_value(root->rnode)) {
-                                        print_immediate_sub_tree(root);
+                                        print_immediate_sub_tree(root->rnode);
                                     }
                                     else {
                                         code_recur(root->rnode);
@@ -1363,7 +1363,7 @@ int code_recur(treenode *root) {
                                 else {
                                     code_recur(root->lnode);
                                     print_ident_address(root);
-                                    print_immediate_sub_tree(root);
+                                    print_immediate_sub_tree(root->rnode);
                                 }
                             } else {
                                 code_recur(root->lnode);
@@ -1384,7 +1384,7 @@ int code_recur(treenode *root) {
                                 }
                                 if (root->rnode != NULL && is_immediate_value(root->rnode)){
                                     if (evaluate_expression(root->rnode) != 0)
-                                        print_immediate_sub_tree(root);
+                                        print_immediate_sub_tree(root->rnode);
                                 } else {
                                     code_recur(root->rnode);
                                     if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
@@ -1408,7 +1408,7 @@ int code_recur(treenode *root) {
                                     printf("IND\n");
                                 }
                                 if (root->rnode != NULL && is_immediate_value(root->rnode)) {
-                                    print_immediate_sub_tree(root);
+                                    print_immediate_sub_tree(root->rnode);
                                 }
                                 else {
                                     code_recur(root->rnode);
@@ -1592,10 +1592,14 @@ int code_recur(treenode *root) {
                             if (root->lnode != NULL &&
                                 root->lnode->hdr.type == TN_IDENT)
                                 printf("IND\n");
-                            code_recur(root->rnode);
-                            if (root->rnode != NULL &&
-                                root->rnode->hdr.type == TN_IDENT)
-                                printf("IND\n");
+                            if (root->rnode != NULL && is_immediate_value(root->rnode)) {
+                                print_immediate_sub_tree(root->rnode);
+                            } else{
+                                code_recur(root->rnode);
+                                if (root->rnode != NULL &&
+                                    root->rnode->hdr.type == TN_IDENT)
+                                    printf("IND\n");
+                            }
                             print_correct_method(root);
                         break;
 
@@ -1611,8 +1615,10 @@ int code_recur(treenode *root) {
                             }
                             else if (evaluate_expression(root) != 0 && get_number_of_variables_in_sub_tree(root) == 0)
                                 print_evaluated_value(root);
-                            else
-                            {
+                            else if (evaluate_expression(root) == 0){
+                                printf("LDC 0\n");
+                                break;
+                            } else {
                                 code_recur(root->lnode);
                                 if (root->lnode != NULL &&
                                     root->lnode->hdr.type == TN_IDENT)
@@ -1670,6 +1676,10 @@ int code_recur(treenode *root) {
 
                         case GRTR:
                             /* Greater token ">" */
+                            if (root->rnode != NULL && is_immediate_value(root)){
+                                print_immediate_sub_tree(root);
+                                break;
+                            }
                             code_recur(root->lnode);
                             if (root->lnode != NULL &&
                                 (root->lnode->hdr.type == TN_IDENT ||
@@ -1685,6 +1695,10 @@ int code_recur(treenode *root) {
 
                         case LESS:
                             /* Less token "<" */
+                            if (root->rnode != NULL && is_immediate_value(root)){
+                                print_immediate_sub_tree(root);
+                                break;
+                            }
                             code_recur(root->lnode);
                             if (root->lnode != NULL &&
                                 (root->lnode->hdr.type == TN_IDENT ||
@@ -1700,6 +1714,10 @@ int code_recur(treenode *root) {
 
                         case EQUAL:
                             /* Equal token "==" */
+                            if (root->rnode != NULL && is_immediate_value(root)){
+                                print_immediate_sub_tree(root);
+                                break;
+                            }
                             code_recur(root->lnode);
                             if (root->lnode != NULL &&
                                 (root->lnode->hdr.type == TN_IDENT ||
@@ -1715,6 +1733,10 @@ int code_recur(treenode *root) {
 
                         case NOT_EQ:
                             /* Not equal token "!=" */
+                            if (root->rnode != NULL && is_immediate_value(root)){
+                                print_immediate_sub_tree(root);
+                                break;
+                            }
                             code_recur(root->lnode);
                             if (root->lnode != NULL &&
                                 (root->lnode->hdr.type == TN_IDENT ||
@@ -1730,6 +1752,10 @@ int code_recur(treenode *root) {
 
                         case LESS_EQ:
                             /* Less or equal token "<=" */
+                            if (root->rnode != NULL && is_immediate_value(root)){
+                                print_immediate_sub_tree(root);
+                                break;
+                            }
                             code_recur(root->lnode);
                             if (root->lnode != NULL &&
                                 (root->lnode->hdr.type == TN_IDENT ||
@@ -1745,6 +1771,10 @@ int code_recur(treenode *root) {
 
                         case GRTR_EQ:
                             /* Greater or equal token ">=" */
+                            if (root->rnode != NULL && is_immediate_value(root)){
+                                print_immediate_sub_tree(root);
+                                break;
+                            }
                             code_recur(root->lnode);
                             if (root->lnode != NULL &&
                                 (root->lnode->hdr.type == TN_IDENT ||
@@ -1811,7 +1841,7 @@ int code_recur(treenode *root) {
 }
 
 void print_immediate_sub_tree(const treenode *root) {
-    if (is_immidiate_value_is_zero(root->rnode)) {
+    if (is_immidiate_value_is_zero(root)) {
         printf("LDC 0\n");
     } else{
         print_immediate_value(root);
@@ -1819,14 +1849,14 @@ void print_immediate_sub_tree(const treenode *root) {
 }
 
 void print_immediate_value(const treenode *root) {
-    float ceilVal = ceil(evaluate_expression(root->rnode));
-    float floorVal = floor(evaluate_expression(root->rnode));
+    float ceilVal = ceil(evaluate_expression(root));
+    float floorVal = floor(evaluate_expression(root));
     if (ceilVal == floorVal){
         int integerVal = ceilVal;
         printf("LDC %d\n", integerVal);
     }
     else
-        printf("LDC %f\n", evaluate_expression(root->rnode));
+        printf("LDC %f\n", evaluate_expression(root));
 }
 
 char struct_definition[5000] = "";

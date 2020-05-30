@@ -18,6 +18,7 @@ void main() {
     a = 2 + (2 - 4);
     printf("%d\n", a);
     a = 2 + (5 + 7);
+    printf("%d\n", a);
 
     // -=
     a -= 1;
@@ -44,6 +45,7 @@ void main() {
     printf("%d\n", a);
     a -= 2 - (5 + 7);
     printf("%d\n", a);
+
     // +=
     a = 2 + (2 - 4);
     printf("%d\n", a);
@@ -62,11 +64,15 @@ void main() {
     printf("%d\n", a);
     a += 59;
     printf("%d\n", a);
+    a += 1 + 1 + 1 + 1 + 1 + 1 - 1 + 1 + 1 +1 +1 -8 +1 -6 +1 +1 -1 + 3;
+    printf("%d\n", a);
 
-    // /=
+//     /=
     a = 4;
     printf("%d\n", a);
     a /= 1;
+    printf("%d\n", a);
+    a /= 1 + 1 + 1 + 1 + 1 + 1 - 1 + 1 + 1 +1 +1 -8 +1 -6 +1 +1 -1 + 3 + 1;
     printf("%d\n", a);
     a /= 2;
     printf("%d\n", a);
@@ -85,9 +91,20 @@ void main() {
     a = 8;
     a /= -2;
     printf("%d\n", a);
-    // *=
+    b /= (1+2+3+4+5) / (1+2);
+    printf("%f\n", b);
+    a = 100;
+    a/= (1+2+3+4+5) / (1+2);
+    printf("%d\n", a);
+    a /= ((1+2+3+4+5) / (1+2));
+    printf("%d\n", a);
 
+    // *=
     a *= 1;
+    printf("%d\n", a);
+    a *= 1 + 1 + 1 + 1 + 1 + 1 - 1 + 1 + 1 +1 +1 -8 +1 -6 +1 +1 -1 + 3 + 1;
+    printf("%d\n", a);
+    a *= 1 + 1 + 1 + 1 + 1 + 1 - 1 + 1 + 1 +1 +1 -8 +1 -6 +1 +1 -1 + 3 + 1 - 1;
     printf("%d\n", a);
     a *= 2;
     printf("%d\n", a);
@@ -99,7 +116,6 @@ void main() {
     printf("%d\n", a);
     a *= 0;
     printf("%d\n", a);
-
     a = 15;
     a *= 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +1 +1 -8 +1 -6 +1 +1;
     printf("%d\n", a);
@@ -118,6 +134,10 @@ void main() {
     printf("%d\n", a);
     a = 1 + (1 + 0);
     printf("%d\n", a);
+    a = a + 11;
+    printf("%d\n", a);
+    a = 11 + a;
+    printf("%d\n", a);
 
     // -
     a = 5 - 1;
@@ -129,17 +149,27 @@ void main() {
     a = 1 + (1 + -1) -1;
     printf("%d\n", a);
     a += 1 + (1 + -1) -1;
+    a *= 1 + (1 + -1) -1;
+    a -= 1 + (1 + -1) -1;
     printf("%d\n", a);
+    b = 340 - 2*a;
+    printf("%f\n", b);
+    b = 340 - 2*a*0;
+    printf("%f\n", b);
 
     // /
     a = 5 / 1;
     printf("%d\n", a);
+    a = (1+2+3+4+5) / (1+2);
+    printf("%d\n", a);
     a = 1 / 1;
     printf("%d\n", a);
+
     a = 0 / 456;
     printf("%d\n", a);
+    a = (1+1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +1 +1 -8 +1 -6 +1 +1 -1) / 456;
     printf("%d\n", a);
-    a = 1 + (1 + -1) -1;
+    a = 0 / 1 + (1 + -1) -1;
     printf("%d\n", a);
 
     // *
@@ -149,11 +179,36 @@ void main() {
     printf("%d\n", a);
     a = 0 * 456;
     printf("%d\n", a);
+    a = 456 * 0;
+    printf("%d\n", a);
     a = 8 * (1 + (1 + -1) -1);
     printf("%d\n", a);
 
     // &&
     a = (1 && 1) || (0 && 1);
+    printf("%d\n", a);
+    a = 0 && 1;
+    printf("%d\n", a);
+    a = 1 && 0;
+    printf("%d\n", a);
+    a = (1&&1) && 0;
+    printf("%d\n", a);
+    a = 0 && (1&&1);
+    printf("%d\n", a);
+    a = 1 && 1;
+    printf("%d\n", a);
+    b = 1;
+    a = b && 1;
+    printf("%d\n", a);
+
+    // ||
+    a = 1 || 0;
+    printf("%d\n", a);
+    a = 1 || 1;
+    printf("%d\n", a);
+    a = 0 || 1;
+    printf("%d\n", a);
+    a = 0 || 0;
     printf("%d\n", a);
     a = (1 || 1) && (0 && 0);
     printf("%d\n", a);
@@ -161,6 +216,54 @@ void main() {
     printf("%d\n", a);
     a = (1 && 0) || (1 || 1);
     printf("%d\n", a);
+
+    // ==
+    printf("%d\n", 1 == 1);
+    printf("%d\n", 1 == 2);
+    a = 1;
+    b = 2;
+    printf("%d\n", a == 1);
+    printf("%d\n", 2 == b);
+
+    // >
+    printf("%d\n", 1 > 2);
+    printf("%d\n", 2 > 1);
+    printf("%d\n", a > 1);
+    printf("%d\n", 1 > a);
+    printf("%d\n", b > a);
+    printf("%d\n", a > b);
+    // <
+    printf("%d\n", 1 < 2);
+    printf("%d\n", 2 < 1);
+    printf("%d\n", a < 1);
+    printf("%d\n", 1 < a);
+    printf("%d\n", b < a);
+    printf("%d\n", a < b);
+
+    // <=
+    printf("%d\n", 1 <= 2);
+    printf("%d\n", 2 <= 1);
+    printf("%d\n", 2 <= 2);
+    printf("%d\n", a <= 1);
+    printf("%d\n", 1 <= a);
+    printf("%d\n", b <= a);
+    printf("%d\n", a <= b);
+    // >=
+    printf("%d\n", 1 >= 2);
+    printf("%d\n", 2 >= 1);
+    printf("%d\n", 2 >= 2);
+    printf("%d\n", a >= 1);
+    printf("%d\n", 1 >= a);
+    printf("%d\n", b >= a);
+    printf("%d\n", a >= b);
+
+    // !=
+    printf("%d\n", 1 != 1);
+    printf("%d\n", 1 != 2);
+    a = 1;
+    b = 2;
+    printf("%d\n", a != 1);
+    printf("%d\n", 2 != b);
     return;
 }
 
