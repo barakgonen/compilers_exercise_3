@@ -27,7 +27,7 @@ void main() {
     printf("%f\n", a);
     a = 1 * 15;
     printf("%f\n", a);
-    b = 1.1 * 15.4;
+    b = 1.1 * 15.5;
     printf("%f\n", b);
     a = b * 5;
     printf("%f\n", a);
@@ -36,8 +36,6 @@ void main() {
     printf("%f\n", b);
     printf("%f\n", a);
     b = 5 * b;
-    printf("%f\n", 222222.1111);
-    printf("%d\n", 1233456);
     printf("%f\n", b);
     printf("%f\n", a);
     b = a * 5;
@@ -74,15 +72,16 @@ void main() {
     printf("%f\n", a);
     printf("%f\n",a--);
     printf("%f\n", a);
-    b = b * -1.1212;
+    b = b * -1.1;
     printf("%f\n", b);
-    b = -23213.3243 * b;
+    b = -23213 * b;
     printf("%f\n", b);
     x *= (b*-213) + 16;
     printf("%f\n", b);
     b = (-b) * (-(-b));
     printf("%f\n", b);
-    b -= -b/(-234.43);
+    b = 1;
+    b -= -b/(-234.4);
     printf("%f\n", b);
     x = 10;
     b = -2;

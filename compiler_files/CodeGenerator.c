@@ -409,19 +409,11 @@ void set_node_dimension(treenode *root) {
 }
 
 bool is_constant(const treenode *root) {
-    if (root != NULL && root->rnode != NULL && root->lnode != NULL) {
-        treenode *left = root->lnode;
-        treenode *right = root->rnode;
-        // first case: 5 + 3
-        if ((left->hdr.which == LEAF_T && left->hdr.which == TN_INT || left->hdr.which == TN_REAL) &&
-            (right->hdr.which == LEAF_T && right->hdr.which == TN_INT || left->hdr.which == TN_REAL))
-            return true;
-        // second: 0 + x
-        // third: x + 0
+    if (root == NULL || root->hdr.which == LEAF_T && root->hdr.type != TN_IDENT)
         return true;
-
-    }
-    return false;
+    if (root->hdr.type == TN_IDENT)
+        return false;
+    return (is_constant(root->lnode) && is_constant(root->rnode));
 }
 
 bool both_childs_are_leafs(const treenode *root) {
@@ -592,9 +584,24 @@ bool is_sub_tree_value_is_zero(const treenode *root) {
                  (root->hdr.type == TN_IDENT)))                                         ||
 
                  // For tree
-                (root->rnode != NULL && ((leafnode *) root->rnode)->data.ival == 0);
+                (root->hdr.which != LEAF_T && root->rnode != NULL && ((leafnode *) root->rnode)->data.ival == 0);
 }
 
+// returns true weather right operand is 0, for cases such as a -= 0
+bool is_sub_tree_value_is_one(const treenode *root) {
+    if (root->hdr.type == TN_EXPR)
+        return evaluate_expression(root) == 1;
+
+    return root != NULL &&
+           // for leaf
+           (root->hdr.which == LEAF_T &&
+            ((root->hdr.type == TN_INT  && ((leafnode *)root)->data.ival == 1)      ||
+             (root->hdr.type == TN_REAL && ((leafnode *)root)->data.dval == 1.0)    ||
+             (root->hdr.type == TN_IDENT)))                                         ||
+
+           // For tree
+           (root->hdr.which != LEAF_T && root->rnode != NULL && ((leafnode *) root->rnode)->data.ival == 1);
+}
 bool can_reduce_fractures(const treenode* root) {
     float leftSubtreeVal, rightSubtreeVal;
     switch (root->hdr.tok) {
@@ -708,8 +715,17 @@ void print_ident_address(treenode* root) {
         printf("IND\n");
         return;
     }
-    print_ident_address(root->lnode);
-    print_ident_address(root->rnode);
+    if (root->hdr.which != LEAF_T){
+        print_ident_address(root->lnode);
+        print_ident_address(root->rnode);
+    }
+}
+
+int get_number_of_neg_in_a_row(treenode* root){
+    if (root == NULL || root->hdr.which == LEAF_T && root->hdr.tok != MINUS)
+        return 0;
+    else if (root->hdr.tok == MINUS && (root->lnode == NULL || root->rnode != NULL))
+        return 1 + get_number_of_neg_in_a_row(root->rnode);
 }
 /*
 *	This recursive function is the main method for Code Generation
@@ -873,7 +889,6 @@ int code_recur(treenode *root) {
                     code_recur(forn->incr);
                     code_recur(forn->stemnt);
                     break;
-
                 case TN_FOR:
                     /* For case*/
                     /* e.g. for(i=0;i<5;i++) { ... } */
@@ -1328,8 +1343,23 @@ int code_recur(treenode *root) {
                         case STAR_EQ:
                             /* Multiply equal assignment "*=" */
                             /* e.g. x *= 5; */
-                            if (is_immediate_value(root->rnode) && is_sub_tree_value_is_zero(root->rnode)) {
-                            }else {
+                            if (is_constant(root->rnode)) {
+                                if (is_sub_tree_value_is_zero(root->rnode) ||
+                                        is_sub_tree_value_is_one(root->rnode)) {
+                                    if (is_sub_tree_value_is_zero(root->rnode)) {
+                                        printf("LDC 0\n");
+                                        printf("STO\n");
+                                    } else {
+//                                        DOING NOTHING
+                                    }
+                                    break;
+                                }
+                                else {
+                                    code_recur(root->lnode);
+                                    print_ident_address(root);
+                                    print_immediate_sub_tree(root);
+                                }
+                            } else {
                                 code_recur(root->lnode);
                                 if (root->rnode != NULL && (get_number_of_variables_in_sub_tree(root->rnode) == 0 && evaluate_expression(root->rnode) == 0)){
                                     printf("LDC 0\n");
@@ -1351,9 +1381,9 @@ int code_recur(treenode *root) {
                                         printf("IND\n");
                                     }
                                 }
-                                printf("MUL\n");
-                                printf("STO\n");
                             }
+                            printf("MUL\n");
+                            printf("STO\n");
                             break;
                         case DIV_EQ:
                             /* Divide equal assignment "/=" */
@@ -1518,7 +1548,8 @@ int code_recur(treenode *root) {
                             }
                             if (get_number_of_variables_in_sub_tree(root) == 1 && is_sub_tree_value_is_zero(root)) {
                                 print_ident_address(root);
-                                if (root->lnode == NULL)
+                                int number_of_neg_in_a_row = get_number_of_neg_in_a_row(root);
+                                if (number_of_neg_in_a_row % 2 != 0)
                                     printf("NEG\n");
                                 break;
                             }
@@ -1541,8 +1572,9 @@ int code_recur(treenode *root) {
                             while (root->lnode != NULL && root->lnode->lnode != NULL &&
                                    root->rnode != NULL && can_reduce_fractures(root))
                                 root = root->lnode->lnode;
-                            if (get_number_of_variables_in_sub_tree(root) == 1 && is_sub_tree_value_is_zero(root)) {
-                                print_ident_address(root);
+                            if (root->hdr.which == LEAF_T){
+                                code_recur(root);
+                                printf("IND\n");
                                 break;
                             }
                             code_recur(root->lnode);
@@ -1562,7 +1594,7 @@ int code_recur(treenode *root) {
                                 printf("LDC 1\n");
                                 break;
                             }
-                            else if (is_immidiate_value_is_zero(root->rnode)){
+                            else if (is_immidiate_value_is_zero(root->rnode) && get_number_of_variables_in_sub_tree(root) == 0){
                                 printf("LDC 0\n");
                                 break;
                             }
