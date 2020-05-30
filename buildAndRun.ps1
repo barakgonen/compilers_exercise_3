@@ -65,7 +65,23 @@ Function Run_Sanity_On_HW_3 {
     Get-ChildItem "Input_Files/HW3" -Filter *.c -Recurse | Sort-Object | Foreach-Object {
         $content = $_.FullName
         $Input_File_Path = $content
-        $sample_number=$content.Split('\', 8)[7]
+        $sample_number=$content.Split('\', 6)[5]
+        $command = "Pcode"
+        Pcode_Exe
+    }
+}
+Function Run_Sanity_On_ALL {
+Get-ChildItem "Input_Files/HW1" -Filter *.c -Recurse | Sort-Object | Foreach-Object {
+        $content = $_.FullName
+        $Input_File_Path = $content
+        $sample_number=$content.Split('\', 6)[5]
+        $command = "Pcode"
+        Pcode_Exe
+    }
+    Get-ChildItem "Input_Files/HW3" -Filter *.c -Recurse | Sort-Object | Foreach-Object {
+        $content = $_.FullName
+        $Input_File_Path = $content
+        $sample_number=$content.Split('\', 6)[5]
         $command = "Pcode"
         Pcode_Exe
     }
@@ -101,6 +117,10 @@ elseif($command -eq "HW2"){
 }
 elseif($command -eq "HW3"){
     Run_Sanity_On_HW_3
+    exit
+}
+elseif($command -eq "ALL"){
+    Run_Sanity_On_ALL
     exit
 }
 elseif ($command -eq "Pcode")
