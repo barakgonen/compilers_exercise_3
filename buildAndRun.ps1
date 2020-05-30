@@ -71,13 +71,15 @@ Function Run_Sanity_On_HW_3 {
     }
 }
 Function Run_Sanity_On_ALL {
-Get-ChildItem "Input_Files/HW1" -Filter *.c -Recurse | Sort-Object | Foreach-Object {
+    Write-Host "==============Running on HW1================"
+    Get-ChildItem "Input_Files/HW1" -Filter *.c -Recurse | Sort-Object | Foreach-Object {
         $content = $_.FullName
         $Input_File_Path = $content
         $sample_number=$content.Split('\', 6)[5]
         $command = "Pcode"
         Pcode_Exe
     }
+    Write-Host "==============Running on HW3================"
     Get-ChildItem "Input_Files/HW3" -Filter *.c -Recurse | Sort-Object | Foreach-Object {
         $content = $_.FullName
         $Input_File_Path = $content
