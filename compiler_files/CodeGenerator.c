@@ -892,6 +892,13 @@ int code_recur(treenode *root) {
                 case TN_IF:
                     if (ifn->else_n == NULL) {
                         /* if case */
+                        if (evaluate_expression(ifn->cond) == 0){
+                            break;
+                        }
+                        else if (get_number_of_variables_in_sub_tree(ifn->cond) == 0){
+                            code_recur(ifn->then_n);
+                            break;
+                        }
                         code_recur(ifn->cond);
                         switch (ifn->cond->hdr.type) {
                             case TN_IDENT:
@@ -907,6 +914,15 @@ int code_recur(treenode *root) {
                         code_recur(ifn->then_n);
                         printf("end_if_%d%s\n", root->hdr.line, ":");
                     } else {
+                        if (evaluate_expression(ifn->cond) == 0){
+                            code_recur(ifn->else_n);
+                            break;
+                        }
+                        else if (get_number_of_variables_in_sub_tree(ifn->cond) == 0){
+                            code_recur(ifn->then_n);
+                            break;
+                        }
+
                         code_recur(ifn->cond);
                         printf("FJP else_%d\n", root->hdr.line);
                         code_recur(ifn->then_n);
