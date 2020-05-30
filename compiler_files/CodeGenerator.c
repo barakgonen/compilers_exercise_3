@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
 #define NR_BUCKETS 1024
 
 #define bool int
@@ -474,7 +473,7 @@ bool is_immediate_value(treenode *root) {
         return false;
     return (is_immediate_value(root->lnode) && is_immediate_value(root->rnode));
 }
-
+#define INT_MAX		2147483647
 float evaluate_expression(treenode *root) {
     float evaluated_expression = 0;
     float leftSubtreeVal, rightSubtreeVal;
@@ -491,6 +490,9 @@ float evaluate_expression(treenode *root) {
                     break;
                 case TN_REAL:
                     return leaf->data.dval;
+                    break;
+                case TN_IDENT:
+                    return INT_MAX;
                     break;
 //                default:
 //                    printf("barak unhandled leaf bro, ist's type is: %d\n", leaf->hdr.type);
@@ -561,6 +563,9 @@ float evaluate_expression(treenode *root) {
                 case GRTR_EQ:
                     /* Greater or equal token ">=" */
                     return evaluate_expression(root->lnode) >= evaluate_expression(root->rnode);
+                    break;
+                case IDENT:
+                    return INT_MAX;
                     break;
                 default:
                     break;
@@ -1347,6 +1352,7 @@ int code_recur(treenode *root) {
                                 if (is_sub_tree_value_is_zero(root->rnode) ||
                                         is_sub_tree_value_is_one(root->rnode)) {
                                     if (is_sub_tree_value_is_zero(root->rnode)) {
+                                        code_recur(root->lnode);
                                         printf("LDC 0\n");
                                         printf("STO\n");
                                     } else {
@@ -1361,8 +1367,13 @@ int code_recur(treenode *root) {
                                 }
                             } else {
                                 code_recur(root->lnode);
-                                if (root->rnode != NULL && (get_number_of_variables_in_sub_tree(root->rnode) == 0 && evaluate_expression(root->rnode) == 0)){
-                                    printf("LDC 0\n");
+                                if (root->rnode != NULL && evaluate_expression(root->rnode) == 0){
+                                    if (root->rnode->hdr.type == TN_IDENT && root->rnode->hdr.which == LEAF_T) {
+                                        print_ident_address(root);
+                                        printf("MUL\n");
+                                    }
+                                    else
+                                        printf("LDC 0\n");
                                     printf("STO\n");
                                     break;
                                 }

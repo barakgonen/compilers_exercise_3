@@ -15,10 +15,16 @@ void main() {
 	printf("%d\n", x);
 	x = a + 5;
 	printf("%d\n", x);
+    x = (10*0) - b;
+    printf("%d\n", x);
 	x = b - (10*0);
 	printf("%d\n", x);
 	x = (18-2*9) - b;
+    printf("%d\n", x);
+    x = (18-2*9) + b;
 	printf("%d\n", x);
+    x = (18-2*9) + -b;
+    printf("%d\n", x);
 	x = b - 5;
 	printf("%d\n", x);
 	x = 0 / a;
@@ -57,6 +63,5 @@ void main() {
 	printf("%d\n", a);
 	a -= 0;
 	printf("%d\n", a);
-	
 	return;
 }
