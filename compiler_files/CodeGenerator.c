@@ -503,19 +503,29 @@ float evaluate_expression(treenode *root) {
             switch (root->hdr.tok) {
                 case PLUS:
                     /* Plus token "+" */
-                    return evaluate_expression(root->lnode) + evaluate_expression(root->rnode);
+                    if (evaluate_expression(root->lnode) == INT_MAX || evaluate_expression(root->rnode) == INT_MAX)
+                        return INT_MAX;
+                    else
+                        return evaluate_expression(root->lnode) + evaluate_expression(root->rnode);
                     break;
                 case MINUS:
                     /* Minus token "-" */
                     /* e.g. x-y; */
-                    return evaluate_expression(root->lnode) - evaluate_expression(root->rnode);
+                    if (evaluate_expression(root->lnode) == INT_MAX || evaluate_expression(root->rnode) == INT_MAX)
+                        return INT_MAX;
+                    else
+                        return evaluate_expression(root->lnode) - evaluate_expression(root->rnode);
                     break;
 
                 case DIV:
                     /* Divide token "/" */
+                    if (evaluate_expression(root->lnode) == INT_MAX || evaluate_expression(root->rnode) == INT_MAX)
+                        return INT_MAX;
+                    else{
                     leftSubtreeVal = evaluate_expression(root->lnode);
                     rightSubtreeVal = evaluate_expression(root->rnode);
                     return (rightSubtreeVal == 0) ? 0 : leftSubtreeVal / rightSubtreeVal;
+                    }
                     break;
 
                 case STAR:
@@ -524,49 +534,95 @@ float evaluate_expression(treenode *root) {
                     return leftSubtreeVal * rightSubtreeVal;
                     break;
                 case AND:
-                    return evaluate_expression(root->lnode) && evaluate_expression(root->rnode);
+                    if (evaluate_expression(root->lnode) == INT_MAX || evaluate_expression(root->rnode) == INT_MAX)
+                        return INT_MAX;
+                    else
+                        return evaluate_expression(root->lnode) && evaluate_expression(root->rnode);
                     break;
                 case OR:
                     /* Or token "||" */
-                    return evaluate_expression(root->lnode) || evaluate_expression(root->rnode);
+                    if (evaluate_expression(root->lnode) == INT_MAX || evaluate_expression(root->rnode) == INT_MAX)
+                        return INT_MAX;
+                    else
+                        return evaluate_expression(root->lnode) || evaluate_expression(root->rnode);
                     break;
 
                 case NOT:
                     /* Not token "!" */
-                    return !(evaluate_expression(root->lnode) == evaluate_expression(root->rnode));
+                    if (evaluate_expression(root->lnode) == INT_MAX || evaluate_expression(root->rnode) == INT_MAX)
+                        return INT_MAX;
+                    else
+                        return !(evaluate_expression(root->lnode) == evaluate_expression(root->rnode));
                     break;
 
                 case GRTR:
                     /* Greater token ">" */
-                    return evaluate_expression(root->lnode) > evaluate_expression(root->rnode);
+                    if (evaluate_expression(root->lnode) == INT_MAX || evaluate_expression(root->rnode) == INT_MAX)
+                        return INT_MAX;
+                    else
+                        return evaluate_expression(root->lnode) > evaluate_expression(root->rnode);
                     break;
 
                 case LESS:
                     /* Less token "<" */
-                    return evaluate_expression(root->lnode) < evaluate_expression(root->rnode);
+                    if (evaluate_expression(root->lnode) == INT_MAX || evaluate_expression(root->rnode) == INT_MAX)
+                        return INT_MAX;
+                    else
+                        return evaluate_expression(root->lnode) < evaluate_expression(root->rnode);
                     break;
 
                 case EQUAL:
                     /* Equal token "==" */
-                    return evaluate_expression(root->lnode) == evaluate_expression(root->rnode);
+                    if (evaluate_expression(root->lnode) == INT_MAX || evaluate_expression(root->rnode) == INT_MAX)
+                        return INT_MAX;
+                    else
+                        return evaluate_expression(root->lnode) == evaluate_expression(root->rnode);
                     break;
 
                 case NOT_EQ:
                     /* Not equal token "!=" */
-                    return evaluate_expression(root->lnode) != evaluate_expression(root->rnode);
+                    if (evaluate_expression(root->lnode) == INT_MAX || evaluate_expression(root->rnode) == INT_MAX)
+                        return INT_MAX;
+                    else
+                        return evaluate_expression(root->lnode) != evaluate_expression(root->rnode);
                     break;
 
                 case LESS_EQ:
                     /* Less or equal token "<=" */
-                    return evaluate_expression(root->lnode) <= evaluate_expression(root->rnode);
+                    if (evaluate_expression(root->lnode) == INT_MAX || evaluate_expression(root->rnode) == INT_MAX)
+                        return INT_MAX;
+                    else return evaluate_expression(root->lnode) <= evaluate_expression(root->rnode);
                     break;
 
                 case GRTR_EQ:
                     /* Greater or equal token ">=" */
-                    return evaluate_expression(root->lnode) >= evaluate_expression(root->rnode);
+                    if (evaluate_expression(root->lnode) == INT_MAX || evaluate_expression(root->rnode) == INT_MAX)
+                        return INT_MAX;
+                    else
+                        return evaluate_expression(root->lnode) >= evaluate_expression(root->rnode);
                     break;
                 case IDENT:
                     return INT_MAX;
+                    break;
+                case DECR:
+                    if (root->hdr.type == TN_EXPR && root->rnode == NULL)
+                    {
+                        return evaluate_expression(root->lnode);
+                    }
+                    else if (root->hdr.type == TN_EXPR && root->lnode == NULL)
+                    {
+                        return evaluate_expression(root->rnode);
+                    }
+                    break;
+                case INCR:
+                    if (root->hdr.type == TN_EXPR && root->rnode == NULL)
+                    {
+                        return evaluate_expression(root->lnode);
+                    }
+                    else if (root->hdr.type == TN_EXPR && root->lnode == NULL)
+                    {
+                        return evaluate_expression(root->rnode);
+                    }
                     break;
                 default:
                     break;
@@ -788,6 +844,8 @@ int get_number_of_neg_in_a_row(treenode* root){
     else if (root->hdr.tok == MINUS && (root->lnode == NULL || root->rnode != NULL))
         return 1 + get_number_of_neg_in_a_row(root->rnode);
 }
+
+bool shouldConsiderBreak = true;
 /*
 *	This recursive function is the main method for Code Generation
 *	Input: treenode (AST)
@@ -935,20 +993,23 @@ int code_recur(treenode *root) {
                     return 0;
 
                 case TN_COND_EXPR:
-                    if (evaluate_expression(ifn->cond) != 0){
+                    if (get_number_of_variables_in_sub_tree(ifn->cond) == 0){
+                        if (evaluate_expression(ifn->cond) != 0){
+                            code_recur(ifn->then_n);
+                        }
+                        else{
+                            code_recur(ifn->else_n);
+                        }
+                    } else{
+                        code_recur(ifn->cond);
+                        printf("FJP else_condition_%d%s%d\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col);
                         code_recur(ifn->then_n);
-                    }
-                    else{
+                        printf("ujp after_condition_%d%s%d\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col);
+                        printf("else_condition_%d%s%d%s\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col, ":");
                         code_recur(ifn->else_n);
+                        printf("ujp after_condition_%d%s%d\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col);
+                        printf("after_condition_%d%s%d%s\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col, ":");
                     }
-//                    code_recur(ifn->cond);
-//                    printf("FJP else_condition_%d%s%d\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col);
-//                    code_recur(ifn->then_n);
-//                    printf("ujp after_condition_%d%s%d\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col);
-//                    printf("else_condition_%d%s%d%s\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col, ":");
-//                    code_recur(ifn->else_n);
-//                    printf("ujp after_condition_%d%s%d\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col);
-//                    printf("after_condition_%d%s%d%s\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col, ":");
                     break;
 
                 default:
@@ -1219,7 +1280,7 @@ int code_recur(treenode *root) {
                         /* return jump - for HW2! */
                         code_recur(root->lnode);
                         code_recur(root->rnode);
-                    } else if (root->hdr.tok == BREAK) {
+                    } else if (root->hdr.tok == BREAK && shouldConsiderBreak) {
                         /* break jump - for HW2! */
                         printf("UJP %s%d\n", break_dest, last_loop_end_lable_line_num);
                         code_recur(root->lnode);
@@ -1263,7 +1324,9 @@ int code_recur(treenode *root) {
                                 {
 //                                    printf("FOUND IT!\n");
                                     hasFoundCase = true;
-                                    code_recur(tempCaseLable->rnode);
+                                    shouldConsiderBreak = false;
+                                    code_recur(tempCaseLable->rnode->rnode);
+                                    shouldConsiderBreak = true;
                                 }
                                 else{
 //                                    printf("Case is: %f\n", evaluate_expression(tempCaseExpression));
@@ -1472,7 +1535,7 @@ int code_recur(treenode *root) {
                         case STAR_EQ:
                             /* Multiply equal assignment "*=" */
                             /* e.g. x *= 5; */
-                            if (is_constant(root->rnode)) {
+                            if (evaluate_expression(root->rnode) == 0) {
                                 if (is_sub_tree_value_is_zero(root->rnode) ||
                                         is_sub_tree_value_is_one(root->rnode)) {
                                     if (is_sub_tree_value_is_zero(root->rnode)) {

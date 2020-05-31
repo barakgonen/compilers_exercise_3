@@ -38,6 +38,7 @@ void main() {
     x = (x==5)?(11):(22);
     printf("%d\n",x);
     ++x;
+    printf("%d\n",x);
     for(a=1;a>=1;x--){
       for(a=1;a>0;--x) {
           if (a-- > 0)
