@@ -4,16 +4,16 @@ void main() {
     int a;
     a = 3;
 
-//    switch (a) {
-//        case 1: {
-//            printf("%d\n", 1);
-//            break;
-//        }
-//        case 2: {
-//            printf("%d\n", 2);
-//            break;
-//        }
-//    }
+    switch (a) {
+        case 1: {
+            printf("%d\n", 1);
+            break;
+        }
+        case 2: {
+            printf("%d\n", 2);
+            break;
+        }
+    }
 
     switch (1) {
         case 1: {
@@ -27,20 +27,20 @@ void main() {
         case 1 + 2 + 3:
             break;
     }
-//
-//	switch (1 + 1) {
-//	case 1:
-//	{
-//		printf("%d\n", 1);
-//		break;
-//	}
-//	case 2:
-//	{
-//		printf("%d\n", 2);
-//		break;
-//	}
-//	}
-//
+
+	switch (1 + 1) {
+	case 1:
+	{
+		printf("%d\n", 1);
+		break;
+	}
+	case 2:
+	{
+		printf("%d\n", 2);
+		break;
+	}
+	}
+
 //	switch (16 + 8) {
 //	case 1:
 //	{
