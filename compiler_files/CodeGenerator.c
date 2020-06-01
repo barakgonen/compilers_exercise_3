@@ -805,6 +805,12 @@ void print_correct_method(const treenode* root){
         case PLUS:
             printf("ADD\n");
             break;
+        case AND:
+            printf("AND\n");
+            break;
+        case OR:
+            printf("OR\n");
+            break;
         default:
             break;
     }
@@ -1414,97 +1420,73 @@ int code_recur(treenode *root) {
                     }
                     break;
                 case TN_ASSIGN:
-                    switch (root->hdr.tok) {
-                        case EQ:
-                            /* Regular assignment "=" */
-                            /* e.g. x = 5; */
-                            if (root->lnode != NULL &&
-                                root->rnode != NULL &&
-                                root->lnode->hdr.type == TN_IDENT &&
-                                root->rnode->hdr.type == TN_EXPR &&
-                                root->rnode->lnode != NULL && root->rnode->rnode == NULL &&
-                                (root->rnode->hdr.tok == INCR || root->rnode->hdr.tok == DECR) &&
-                                root->rnode->lnode->hdr.type != TN_DEREF &&
-                                strcmp(((leafnode *) root->rnode->lnode)->data.sval->str,
-                                       ((leafnode *) root->lnode)->data.sval->str) == 0) {
-                                // because of c++ and c diffrences: x=x++ increments x in c++ and does nothing in c
-                            } else if (root->rnode != NULL && is_immediate_value(root->rnode)) {
-                                code_recur(root->lnode);
-                                evaluate_expression(root->rnode);
-                                print_immediate_sub_tree(root->rnode);
-                                printf("STO\n");
-                                break;
-                            } else {
-                                code_recur(root->lnode);
-                                // printf("struct name isa: %s\n", struct_name);
-                                if (root->lnode != NULL && root->lnode->hdr.type == TN_SELECT)
-                                    // root->lnode->lnode != NULL && root->lnode->lnode->hdr.type != TN_INDEX)
-                                {
-                                    if (get_variable_from_table(struct_name) != -1) {
-                                        // printf("we would like to have the address of: %s\n", struct_name);
-                                        printf("LDC %d\n", get_variable_from_table(struct_name));
-                                        memset(struct_name, 0, sizeof(struct_name));
+                        switch (root->hdr.tok) {
+                            case EQ:
+                                /* Regular assignment "=" */
+                                /* e.g. x = 5; */
+                                if (root->lnode != NULL &&
+                                    root->rnode != NULL &&
+                                    root->lnode->hdr.type == TN_IDENT &&
+                                    root->rnode->hdr.type == TN_EXPR &&
+                                    root->rnode->lnode != NULL && root->rnode->rnode == NULL &&
+                                    (root->rnode->hdr.tok == INCR || root->rnode->hdr.tok == DECR) &&
+                                    root->rnode->lnode->hdr.type != TN_DEREF &&
+                                    strcmp(((leafnode *) root->rnode->lnode)->data.sval->str,
+                                           ((leafnode *) root->lnode)->data.sval->str) == 0) {
+                                    // because of c++ and c diffrences: x=x++ increments x in c++ and does nothing in c
+                                } else if (root->rnode != NULL && is_immediate_value(root->rnode)) {
+                                    code_recur(root->lnode);
+                                    evaluate_expression(root->rnode);
+                                    print_immediate_sub_tree(root->rnode);
+                                    printf("STO\n");
+                                    break;
+                                } else {
+                                    code_recur(root->lnode);
+                                    // printf("struct name isa: %s\n", struct_name);
+                                    if (root->lnode != NULL && root->lnode->hdr.type == TN_SELECT)
+                                        // root->lnode->lnode != NULL && root->lnode->lnode->hdr.type != TN_INDEX)
+                                    {
+                                        if (get_variable_from_table(struct_name) != -1) {
+                                            // printf("we would like to have the address of: %s\n", struct_name);
+                                            printf("LDC %d\n", get_variable_from_table(struct_name));
+                                            memset(struct_name, 0, sizeof(struct_name));
+                                        }
                                     }
-                                }
-                                code_recur(root->rnode);
-                                if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
-                                    // WE REPLACED ldc here with IND because of case such as e = a
-                                    // NO NEED TO GET THE IDENTIFIER HERE JUST NEED THE ADDRESS
-                                    leaf = (leafnode *) root->rnode;
-                                    printf("IND\n");
-                                }
-                                // We dont really know what this if means, but in case such as a = a + 6 we found double STO, so we removed it
+                                    code_recur(root->rnode);
+                                    if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
+                                        // WE REPLACED ldc here with IND because of case such as e = a
+                                        // NO NEED TO GET THE IDENTIFIER HERE JUST NEED THE ADDRESS
+                                        leaf = (leafnode *) root->rnode;
+                                        printf("IND\n");
+                                    }
+                                    // We dont really know what this if means, but in case such as a = a + 6 we found double STO, so we removed it
 //                                if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT &&
 //                                    root->rnode->lnode != NULL && root->rnode->lnode->hdr.type == TN_IDENT &&
 //                                    root->rnode != NULL && root->rnode->hdr.type == TN_EXPR &&
 //                                    (root->rnode->hdr.tok != INCR && root->rnode->hdr.tok != DECR))
 //                                    printf("STO\n");
-                                if (root->rnode != NULL && root->rnode->hdr.type == TN_INDEX)
-                                    printf("IND\n");
-                            }
-                            printf("STO\n");
-                            break;
-                        case PLUS_EQ:
-                            /* Plus equal assignment "+=" */
-                            /* e.g. x += 5; */
-                            if (is_immediate_value(root->rnode)) {
-                                if (is_sub_tree_value_is_zero(root->rnode)) {
+                                    if (root->rnode != NULL && root->rnode->hdr.type == TN_INDEX)
+                                        printf("IND\n");
+                                }
+                                printf("STO\n");
+                                break;
+                            case PLUS_EQ:
+                                /* Plus equal assignment "+=" */
+                                /* e.g. x += 5; */
+                                if (is_immediate_value(root->rnode)) {
+                                    if (is_sub_tree_value_is_zero(root)) {
+                                        break;
+                                    } else {
+                                        code_recur(root->lnode);
+                                        print_ident_address(root);
+                                        print_immediate_sub_tree(root->rnode);
+                                        printf("ADD\n");
+                                        printf("STO\n");
+                                    }
+                                } else if (evaluate_expression(root->rnode) == 0){
                                     break;
-                                }else{
-                                    code_recur(root->lnode);
-                                    print_ident_address(root);
-                                    print_immediate_sub_tree(root->rnode);
-                                    printf("ADD\n");
-                                    printf("STO\n");
-                                }
-                            } else {
-                                code_recur(root->lnode);
-                                if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT) {
-                                    leaf = (leafnode *) root->lnode;
-                                    printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
-                                    printf("IND\n");
-                                }
-                                if (root->rnode != NULL && is_immediate_value(root->rnode)) {
-                                    print_immediate_sub_tree(root->rnode);
                                 }
                                 else {
-                                    code_recur(root->rnode);
-                                    if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
-                                        leaf = (leafnode *) root->rnode;
-                                        printf("IND\n");
-                                    }
-                                }
-                                printf("ADD\n");
-                                printf("STO\n");
-                            }
-                            break;
-                        case MINUS_EQ:
-                            /* Minus equal assigment "-=" */
-                            /* e.g. x-= 5; */
-                            if (evaluate_expression(root->rnode) == 0 ||
-                                (is_immediate_value(root->rnode) && is_sub_tree_value_is_zero(root->rnode))) {
-                            }
-                            else {
                                     code_recur(root->lnode);
                                     if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT) {
                                         leaf = (leafnode *) root->lnode;
@@ -1513,8 +1495,32 @@ int code_recur(treenode *root) {
                                     }
                                     if (root->rnode != NULL && is_immediate_value(root->rnode)) {
                                         print_immediate_sub_tree(root->rnode);
+                                    } else {
+                                        code_recur(root->rnode);
+                                        if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
+                                            leaf = (leafnode *) root->rnode;
+                                            printf("IND\n");
+                                        }
                                     }
-                                    else {
+                                    printf("ADD\n");
+                                    printf("STO\n");
+                                }
+                                break;
+                            case MINUS_EQ:
+                                /* Minus equal assigment "-=" */
+                                /* e.g. x-= 5; */
+                                if (evaluate_expression(root->rnode) == 0 ||
+                                    (is_immediate_value(root->rnode) && is_sub_tree_value_is_zero(root->rnode))) {
+                                } else {
+                                    code_recur(root->lnode);
+                                    if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT) {
+                                        leaf = (leafnode *) root->lnode;
+                                        printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
+                                        printf("IND\n");
+                                    }
+                                    if (root->rnode != NULL && is_immediate_value(root->rnode)) {
+                                        print_immediate_sub_tree(root->rnode);
+                                    } else {
                                         code_recur(root->rnode);
                                         if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
                                             leaf = (leafnode *) root->rnode;
@@ -1524,91 +1530,85 @@ int code_recur(treenode *root) {
                                     printf("SUB\n");
                                     printf("STO\n");
                                 }
-                            break;
-                        case STAR_EQ:
-                            /* Multiply equal assignment "*=" */
-                            /* e.g. x *= 5; */
-                            if (evaluate_expression(root->rnode) == 0) {
-                                if (is_sub_tree_value_is_zero(root->rnode) ||
-                                        is_sub_tree_value_is_one(root->rnode)) {
-                                    if (is_sub_tree_value_is_zero(root->rnode)) {
-                                        code_recur(root->lnode);
-                                        printf("LDC 0\n");
-                                        printf("STO\n");
-                                    } else {
-//                                        DOING NOTHING
-                                    }
-                                    break;
-                                }
-                                else {
-                                    code_recur(root->lnode);
-                                    print_ident_address(root);
-                                    print_immediate_sub_tree(root->rnode);
-                                }
-                            }
-                            else if (evaluate_expression(root->rnode) == 1){
                                 break;
-                            }
-                                else {
-                                code_recur(root->lnode);
-                                if (root->rnode != NULL && evaluate_expression(root->rnode) == 0){
-                                    if (root->rnode->hdr.type == TN_IDENT && root->rnode->hdr.which == LEAF_T) {
+                            case STAR_EQ:
+                                /* Multiply equal assignment "*=" */
+                                /* e.g. x *= 5; */
+                                if (evaluate_expression(root->rnode) == 0) {
+                                    if (is_sub_tree_value_is_zero(root->rnode) ||
+                                        is_sub_tree_value_is_one(root->rnode)) {
+                                        if (is_sub_tree_value_is_zero(root->rnode)) {
+                                            code_recur(root->lnode);
+                                            printf("LDC 0\n");
+                                            printf("STO\n");
+                                        } else {
+//                                        DOING NOTHING
+                                        }
+                                        break;
+                                    } else {
+                                        code_recur(root->lnode);
                                         print_ident_address(root);
-                                        printf("MUL\n");
-                                    }
-                                    else
-                                        printf("LDC 0\n");
-                                    printf("STO\n");
-                                    break;
-                                }
-                                else if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT) {
-                                    leaf = (leafnode *) root->lnode;
-                                    printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
-                                    printf("IND\n");
-                                }
-                                if (root->rnode != NULL && is_immediate_value(root->rnode)){
-                                    if (evaluate_expression(root->rnode) != 0)
                                         print_immediate_sub_tree(root->rnode);
+                                    }
+                                } else if (evaluate_expression(root->rnode) == 1) {
+                                    break;
                                 } else {
-                                    code_recur(root->rnode);
-                                    if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
-                                        leaf = (leafnode *) root->rnode;
+                                    code_recur(root->lnode);
+                                    if (root->rnode != NULL && evaluate_expression(root->rnode) == 0) {
+                                        if (root->rnode->hdr.type == TN_IDENT && root->rnode->hdr.which == LEAF_T) {
+                                            print_ident_address(root);
+                                            printf("MUL\n");
+                                        } else
+                                            printf("LDC 0\n");
+                                        printf("STO\n");
+                                        break;
+                                    } else if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT) {
+                                        leaf = (leafnode *) root->lnode;
+                                        printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
                                         printf("IND\n");
                                     }
-                                }
-                            }
-                            printf("MUL\n");
-                            printf("STO\n");
-                            break;
-                        case DIV_EQ:
-                            /* Divide equal assignment "/=" */
-                            /* e.g. x /= 5; */
-                            if (is_operand_is_one(root->rnode)) {
-                            } else {
-                                code_recur(root->lnode);
-                                if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT) {
-                                    leaf = (leafnode *) root->lnode;
-                                    printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
-                                    printf("IND\n");
-                                }
-                                if (root->rnode != NULL && is_immediate_value(root->rnode)) {
-                                    print_immediate_sub_tree(root->rnode);
-                                }
-                                else {
-                                    code_recur(root->rnode);
-                                    if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
-                                        leaf = (leafnode *) root->rnode;
-                                        printf("IND\n");
+                                    if (root->rnode != NULL && is_immediate_value(root->rnode)) {
+                                        if (evaluate_expression(root->rnode) != 0)
+                                            print_immediate_sub_tree(root->rnode);
+                                    } else {
+                                        code_recur(root->rnode);
+                                        if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
+                                            leaf = (leafnode *) root->rnode;
+                                            printf("IND\n");
+                                        }
                                     }
                                 }
-                                printf("DIV\n");
+                                printf("MUL\n");
                                 printf("STO\n");
-                            }
-                            break;
-                        default:
-                            printf("BUG, didn't handle assigment token: %d\n, ", root->hdr.tok);
-                            break;
-                    }
+                                break;
+                            case DIV_EQ:
+                                /* Divide equal assignment "/=" */
+                                /* e.g. x /= 5; */
+                                if (is_operand_is_one(root->rnode)) {
+                                } else {
+                                    code_recur(root->lnode);
+                                    if (root->lnode != NULL && root->lnode->hdr.type == TN_IDENT) {
+                                        leaf = (leafnode *) root->lnode;
+                                        printf("LDC %d\n", get_variable_from_table(leaf->data.sval->str));
+                                        printf("IND\n");
+                                    }
+                                    if (root->rnode != NULL && is_immediate_value(root->rnode)) {
+                                        print_immediate_sub_tree(root->rnode);
+                                    } else {
+                                        code_recur(root->rnode);
+                                        if (root->rnode != NULL && root->rnode->hdr.type == TN_IDENT) {
+                                            leaf = (leafnode *) root->rnode;
+                                            printf("IND\n");
+                                        }
+                                    }
+                                    printf("DIV\n");
+                                    printf("STO\n");
+                                }
+                                break;
+                            default:
+                                printf("BUG, didn't handle assigment token: %d\n, ", root->hdr.tok);
+                                break;
+                        }
                     break;
                 case TN_EXPR:
                     switch (root->hdr.tok) {
@@ -1725,8 +1725,12 @@ int code_recur(treenode *root) {
                                      root->lnode->hdr.type == TN_SELECT))
                                     printf("IND\n");
                             }
-                            if (evaluate_expression(root->rnode) == 0)
+                            if (evaluate_expression(root->rnode) == 0){
+//                                if (evaluate_expression(root->lnode) != 0)
+//                                    print_correct_method(root);
                                 break;
+                            }
+
                             code_recur(root->rnode);
                             if (root->rnode != NULL &&
                                 (root->rnode->hdr.type == TN_IDENT ||
@@ -1844,63 +1848,130 @@ int code_recur(treenode *root) {
                             break;
                         case AND:
                             /* And token "&&" */
-                            if (evaluate_expression(root) != 0) {
-                                if (evaluate_expression(root->rnode) == 0 && evaluate_expression(root->lnode) != 0){
-                                    print_ident_address(root->lnode);
-                                }
-                                else if (evaluate_expression(root->rnode) != 0 && evaluate_expression(root->lnode) == 0){
-                                    print_ident_address(root->rnode);
-                                }
-                                else if (evaluate_expression(root->rnode) != 0 && evaluate_expression(root->lnode) != 0){
-
-                                }
-//                                // where is the constant? and where is the identifier
-//                                printf("LDC 0\n");
+                            if (is_constant(root)){
+                                print_immediate_value(root);
                                 break;
-                            } else{
-                                printf("LDC 0\n");
                             }
-                            code_recur(root->lnode);
-                            if (root->lnode != NULL &&
-                                (root->lnode->hdr.type == TN_IDENT ||
-                                 root->lnode->hdr.type == TN_INDEX))
-                                printf("IND\n");
-                            code_recur(root->rnode);
-                            if (root->rnode != NULL &&
-                                (root->rnode->hdr.type == TN_IDENT ||
-                                 root->rnode->hdr.type == TN_INDEX))
-                                printf("IND\n");
-                            printf("AND\n");
+                            else if (evaluate_expression(root->rnode) == 1) {
+                                code_recur(root->lnode);
+                                if (!is_immediate_value(root->lnode))
+                                    printf("IND\n");
+                                break;
+                            }
+                            else if (evaluate_expression(root->lnode) == 1) {
+                                code_recur(root->rnode);
+                                if (!is_immediate_value(root->rnode))
+                                    printf("IND\n");
+                                break;
+                            }
+                            else if (evaluate_expression(root->lnode) == 0 || evaluate_expression(root->rnode) == 0) {
+                                printf("LDC 0\n");
+                                break;
+
+                            }
+                            else {
+                                // IF ALL CONSTANT
+                                // PRINT evalutate_expression
+                                // ELSE IF --> right is 1, call code_recur on left
+                                // ELSE IF --> left is 1, call code_recur on right
+                                // else if --> left is false || right is false --> LDC 0
+                                // else standard code
+//                            if (evaluate_expression(root) != 0) {
+//                                if (evaluate_expression(root->rnode) == 0 && evaluate_expression(root->lnode) != 0){
+//                                    print_ident_address(root->lnode);
+//                                    break;
+//                                }
+//                                else if (evaluate_expression(root->rnode) != 0 && evaluate_expression(root->lnode) == 0){
+//                                    print_ident_address(root->rnode);
+//                                    break;
+//                                }
+//                                else if (evaluate_expression(root->rnode) != 0 && evaluate_expression(root->lnode) != 0) {
+//                                    print_ident_address(root->lnode);
+//                                    printf("LDC 1\n");
+//                                    break;
+//                                }
+////                                // where is the constant? and where is the identifier
+////                                printf("LDC 0\n");
+//                                break;
+//                            } else{
+//                                printf("LDC 0\n");
+//                            }
+                                code_recur(root->lnode);
+                                if (root->lnode != NULL &&
+                                    (root->lnode->hdr.type == TN_IDENT ||
+                                     root->lnode->hdr.type == TN_INDEX))
+                                    printf("IND\n");
+                                code_recur(root->rnode);
+                                if (root->rnode != NULL &&
+                                    (root->rnode->hdr.type == TN_IDENT ||
+                                     root->rnode->hdr.type == TN_INDEX))
+                                    printf("IND\n");
+                                printf("AND\n");
+                            }
                             break;
                         case OR:
                             /* Or token "||" */
-                            if (evaluate_expression(root) != 0) {
-                                if (evaluate_expression(root->rnode) == 0 && evaluate_expression(root->lnode) != 0){
-                                    print_ident_address(root->lnode);
-                                }
-                                else if (evaluate_expression(root->rnode) != 0 && evaluate_expression(root->lnode) == 0){
-                                    print_ident_address(root->rnode);
-                                }
-                                else if (evaluate_expression(root->rnode) != 0 && evaluate_expression(root->lnode) != 0){
-                                    print_ident_address(root);
-                                }
-//                                // where is the constant? and where is the identifier
+//                            if (evaluate_expression(root) != 0) {
+//                                if (evaluate_expression(root->rnode) == 0 && evaluate_expression(root->lnode) != 0){
+//                                    print_ident_address(root->lnode);
+//                                }
+//                                else if (evaluate_expression(root->rnode) != 0 && evaluate_expression(root->lnode) == 0){
+//                                    print_ident_address(root->rnode);
+//                                }
+//                                else if (evaluate_expression(root->rnode) != 0 && evaluate_expression(root->lnode) != 0){
+//                                    print_ident_address(root);
+//                                }
+////                                // where is the constant? and where is the identifier
+////                                printf("LDC 0\n");
+//                                break;
+//                            } else{
 //                                printf("LDC 0\n");
+//                            }
+                            if (is_constant(root)){
+                                print_immediate_value(root);
                                 break;
-                            } else{
-                                printf("LDC 0\n");
                             }
-                            code_recur(root->lnode);
-                            if (root->lnode != NULL &&
-                                (root->lnode->hdr.type == TN_IDENT ||
-                                 root->lnode->hdr.type == TN_INDEX))
-                                printf("IND\n");
-                            code_recur(root->rnode);
-                            if (root->rnode != NULL &&
-                                (root->rnode->hdr.type == TN_IDENT ||
-                                 root->rnode->hdr.type == TN_INDEX))
-                                printf("IND\n");
-                            printf("OR\n");
+                            else if (evaluate_expression(root->rnode) == 0 && evaluate_expression(root->lnode) > 100000){
+                                code_recur(root->lnode);
+                                if (!is_immediate_value(root->lnode))
+                                    printf("IND\n");
+                                break;
+                            }
+                            else if (evaluate_expression(root->rnode) == 1) {
+                                printf("LDC 1\n");
+//                                code_recur(root->lnode);
+//                                if (!is_immediate_value(root->lnode))
+//                                    printf("IND\n");
+                                break;
+                            }
+                            else if (evaluate_expression(root->lnode) == 1) {
+                                code_recur(root->rnode);
+                                if (!is_immediate_value(root->rnode))
+                                    printf("IND\n");
+
+                                break;
+                            }
+                            else if (evaluate_expression(root->lnode) == 1) {
+                                code_recur(root->rnode);
+                                break;
+                            }
+                            else if (evaluate_expression(root->rnode) == 1) {
+                                code_recur(root->lnode);
+                                break;
+                            }
+                            else {
+                                code_recur(root->lnode);
+                                if (root->lnode != NULL &&
+                                    (root->lnode->hdr.type == TN_IDENT ||
+                                     root->lnode->hdr.type == TN_INDEX))
+                                    printf("IND\n");
+                                code_recur(root->rnode);
+                                if (root->rnode != NULL &&
+                                    (root->rnode->hdr.type == TN_IDENT ||
+                                     root->rnode->hdr.type == TN_INDEX))
+                                    printf("IND\n");
+                                printf("OR\n");
+                            }
                             break;
 
                         case NOT:
