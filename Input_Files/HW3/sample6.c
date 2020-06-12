@@ -24,7 +24,7 @@ void main() {
 	printf("%d\n", x);
 	x = (a && 1) + (a && 0) + (a || 1) + (a || 0);
 	printf("%d\n", x);
-	x = (0 && a)+ (1 && a) + (1 || a) + (0 || a);
+	x = (0 && a) + (1 && a) + (1 || a) + (0 || a);
 	printf("%d\n", x);
 	x = (a * 1) + (0 / b);
 	printf("%d\n", x);

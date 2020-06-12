@@ -1750,6 +1750,20 @@ int code_recur(treenode *root) {
 
                         case PLUS:
                             /* Plus token "+" */
+                            while (root->lnode != NULL && root->lnode->lnode != NULL &&
+                                   root->rnode != NULL && can_reduce_fractures(root))
+                                root = root->lnode->lnode;
+                            if (get_number_of_variables_in_sub_tree(root) == 0 && !is_sub_tree_value_is_zero(root)){
+                                print_evaluated_value(root);
+                                break;
+                            }
+                            if (get_number_of_variables_in_sub_tree(root) == 1
+                                    && is_sub_tree_value_is_zero(root->rnode)) {
+                                print_ident_address(root);
+                                code_recur(root->rnode);
+                                print_correct_method(root);
+                                break;
+                            }
                             if (evaluate_expression(root->lnode) != 0){
                                 code_recur(root->lnode);
                                 if (root->lnode != NULL &&
@@ -1956,8 +1970,10 @@ int code_recur(treenode *root) {
                                 print_immediate_value(root);
                                 break;
                             }
-                            else if (evaluate_expression(root->rnode) == 0 && evaluate_expression(root->lnode) > 100000){
+                            else if (evaluate_expression(root->rnode) == 0 && evaluate_expression(root->lnode) == INT_MAX){
                                 code_recur(root->lnode);
+                                if (get_number_of_variables_in_sub_tree(root->lnode) == 1)
+                                    printf("IND\n");
                                 // In comment because we decided those functions preforms logic, and if someone "in the future" will have to use the value stored in that address, he will call "IND"
 //                                if (!is_immediate_value(root->lnode))
 //                                    printf("IND\n");
@@ -1971,7 +1987,10 @@ int code_recur(treenode *root) {
                                 break;
                             }
                             else if (evaluate_expression(root->lnode) == 1) {
-                                code_recur(root->rnode);
+                                printf("LDC 1\n");
+//                                code_recur(root->rnode);
+//                                if (get_number_of_variables_in_sub_tree(root->rnode) == 1)
+//                                    printf("IND\n");
                                 break;
                             }
                             else if (evaluate_expression(root->rnode) == 1) {
@@ -1981,6 +2000,16 @@ int code_recur(treenode *root) {
                             else if (is_sub_tree_value_is_zero(root->rnode)){
                                 code_recur(root->rnode);
                                 printf("IND\n");
+                                break;
+                            }
+                            else if (is_sub_tree_value_is_zero(root->lnode) && !is_sub_tree_value_is_zero(root->rnode)){
+                                code_recur(root->rnode);
+                                printf("IND\n"); // NOT SURE, might be a problem
+                                break;
+                            }
+                            else if (!is_sub_tree_value_is_zero(root->lnode) && is_sub_tree_value_is_zero(root->rnode)){
+                                code_recur(root->lnode);
+                                printf("IND\n"); // NOT SURE, might be a problem
                                 break;
                             }
                             else {
