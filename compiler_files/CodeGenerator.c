@@ -1761,7 +1761,8 @@ int code_recur(treenode *root) {
                                     && is_sub_tree_value_is_zero(root->rnode)) {
                                 print_ident_address(root);
                                 code_recur(root->rnode);
-                                print_correct_method(root);
+                                if (evaluate_expression(root->rnode) != 0)
+                                    print_correct_method(root);
                                 break;
                             }
                             if (evaluate_expression(root->lnode) != 0){
@@ -1782,7 +1783,8 @@ int code_recur(treenode *root) {
                                     printf("IND\n");
                             }
                             if (evaluate_expression(root->lnode) != 0 &&evaluate_expression(root->rnode)){
-                                print_correct_method(root);
+//                                if (evaluate_expression(root->rnode) != 0)
+                                    print_correct_method(root);
                             }
                             break;
                         case MINUS:
@@ -1799,32 +1801,29 @@ int code_recur(treenode *root) {
                                 print_ident_address(root);
 
                                 code_recur(root->rnode);
-                                print_correct_method(root);
-//                                if (get_number_of_variables_in_sub_tree(root->rnode) == 0){
-//                                    printf("VALUE OF RNODE\n");
-//                                } else{
-//                                    printf("VALUE OF LNODE\n");
-//                                }
-//                                int number_of_neg_in_a_row = get_number_of_neg_in_a_row(root);
-//                                if (number_of_neg_in_a_row % 2 == 0)
-//                                    printf("NEG\n");
+                                if (evaluate_expression(root->rnode) != 0)
+                                    print_correct_method(root);
                                 break;
                             }
-
-                            code_recur(root->lnode);
-                            if (root->lnode != NULL &&
-                                root->lnode->hdr.type == TN_IDENT)
-                                printf("IND\n");
-                            code_recur(root->rnode);
-                            if (root->rnode != NULL &&
-                                root->rnode->hdr.type == TN_IDENT)
-                                printf("IND\n");
-                            if (root->lnode == NULL)
-                                printf("NEG\n");
-                            else
-                                printf("SUB\n");
-                            break;
-
+                            if (evaluate_expression(root) != 0){
+                                if (evaluate_expression(root->lnode) != 0){
+                                    code_recur(root->lnode);
+                                    if (root->lnode != NULL &&
+                                        root->lnode->hdr.type == TN_IDENT)
+                                        printf("IND\n");
+                                }
+                                if (evaluate_expression(root->rnode) != 0){
+                                    code_recur(root->rnode);
+                                    if (root->rnode != NULL &&
+                                        root->rnode->hdr.type == TN_IDENT)
+                                        printf("IND\n");
+                                }
+                                if (root->lnode == NULL || evaluate_expression(root->lnode) == 0)
+                                    printf("NEG\n");
+                                else
+                                    printf("SUB\n");
+                            }
+                        break;
                         case DIV:
                             /* Divide token "/" */
                             while (root->lnode != NULL && root->lnode->lnode != NULL &&
@@ -1880,8 +1879,10 @@ int code_recur(treenode *root) {
                                     printf("LDC 1\n");
                                 break;
                             }
+
                             else if (is_immidiate_value_is_zero(root->rnode) && get_number_of_variables_in_sub_tree(root) == 0){
-                                printf("LDC 0\n");
+                                // in case such as x = x - (15 * 0),
+//                                printf("LDC 0\n");
                                 break;
                             }
                             else if (evaluate_expression(root) != 0 && get_number_of_variables_in_sub_tree(root) == 0)
@@ -1889,7 +1890,8 @@ int code_recur(treenode *root) {
                             else if (evaluate_expression(root) == 0){
                                 printf("LDC 0\n");
                                 break;
-                            } else {
+                            }
+                            else {
                                 code_recur(root->lnode);
                                 if (root->lnode != NULL &&
                                     root->lnode->hdr.type == TN_IDENT)
@@ -2010,6 +2012,10 @@ int code_recur(treenode *root) {
                             else if (!is_sub_tree_value_is_zero(root->lnode) && is_sub_tree_value_is_zero(root->rnode)){
                                 code_recur(root->lnode);
                                 printf("IND\n"); // NOT SURE, might be a problem
+                                break;
+                            }
+                            else if (is_constant(root->lnode) && evaluate_expression(root->lnode) != 0 ){
+                                printf("LDC 1\n");
                                 break;
                             }
                             else {
