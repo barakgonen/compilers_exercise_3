@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#define NR_BUCKETS 1024
+#include <limits.h>
 
 #define bool int
 #define true 1
@@ -466,9 +466,9 @@ const char *get_immidiate_value(const treenode *root) {
 }
 
 #define INT_MAX		2147483647
-float evaluate_expression(treenode *root) {
-    float evaluated_expression = 0;
-    float leftSubtreeVal, rightSubtreeVal;
+double evaluate_expression(treenode *root) {
+    double evaluated_expression = 0;
+    double leftSubtreeVal, rightSubtreeVal;
     leafnode *leaf;
     if_node *ifn;
     if (!root)
@@ -519,10 +519,23 @@ float evaluate_expression(treenode *root) {
                 case STAR:
                     leftSubtreeVal = evaluate_expression(root->lnode);
                     rightSubtreeVal = evaluate_expression(root->rnode);
+                    if (leftSubtreeVal == 0 || rightSubtreeVal == 0)
+                        return 0;
+                    else if (leftSubtreeVal == INT_MAX && rightSubtreeVal == INT_MAX ||
+                        leftSubtreeVal == INT_MAX && rightSubtreeVal != INT_MAX ||
+                        leftSubtreeVal != INT_MAX && rightSubtreeVal == INT_MAX)
+                        return INT_MAX;
                     return leftSubtreeVal * rightSubtreeVal;
                     break;
                 case AND:
-                        return evaluate_expression(root->lnode) && evaluate_expression(root->rnode);
+                    leftSubtreeVal = evaluate_expression(root->lnode);
+                    rightSubtreeVal = evaluate_expression(root->rnode);
+                    if (leftSubtreeVal == 1 && rightSubtreeVal != 0 && rightSubtreeVal <= INT_MAX)
+                        return rightSubtreeVal;
+                    if (rightSubtreeVal == 1 && leftSubtreeVal != 0 && leftSubtreeVal <= INT_MAX)
+                        return leftSubtreeVal;
+
+                    return evaluate_expression(root->lnode) && evaluate_expression(root->rnode);
                     break;
                 case OR:
                     /* Or token "||" */
@@ -649,7 +662,9 @@ float evaluate_expression(treenode *root) {
                 case TN_COND_EXPR:
                     switch(ifn->cond->hdr.type){
                         case TN_EXPR:
-                            if (evaluate_expression(ifn->cond) != 0)
+                            if (evaluate_expression(ifn->cond) == INT_MAX)
+                                return INT_MAX;
+                            else if (evaluate_expression(ifn->cond) != 0)
                                 return evaluate_expression(ifn->then_n);
                             else
                                 return evaluate_expression(ifn->else_n);
@@ -677,8 +692,12 @@ float evaluate_expression(treenode *root) {
 bool is_immediate_value(treenode *root) {
     if (root == NULL || (((leafnode *) (root))->hdr.type == TN_INT || ((leafnode *) (root))->hdr.type == TN_REAL))
         return true;
-    if (root->hdr.type == TN_EXPR)
-        return evaluate_expression(root) == 0;
+    if (root->hdr.type == TN_EXPR){
+        int evaluated_expression = evaluate_expression(root);
+        if (evaluated_expression == INT_MAX)
+            return false;
+        return true;
+    }
     if (root->hdr.type != TN_INT && root->hdr.type != TN_REAL && root->hdr.type != TN_EXPR && root->hdr.type != TN_COND_EXPR)
         return false;
     return (is_immediate_value(root->lnode) && is_immediate_value(root->rnode));
@@ -1009,7 +1028,7 @@ int code_recur(treenode *root) {
                         printf("ujp after_condition_%d%s%d\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col);
                         printf("else_condition_%d%s%d%s\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col, ":");
                         code_recur(ifn->else_n);
-                        printf("ujp after_condition_%d%s%d\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col);
+//                        printf("ujp after_condition_%d%s%d\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col);
                         printf("after_condition_%d%s%d%s\n", ifn->cond->hdr.line, "_", ifn->cond->hdr.col, ":");
                     }
                     break;
@@ -1436,11 +1455,16 @@ int code_recur(treenode *root) {
                                     // because of c++ and c diffrences: x=x++ increments x in c++ and does nothing in c
                                 } else if (root->rnode != NULL && is_immediate_value(root->rnode)) {
                                     code_recur(root->lnode);
-                                    evaluate_expression(root->rnode);
-                                    print_immediate_sub_tree(root->rnode);
+                                    if (get_number_of_variables_in_sub_tree(root->rnode) == 0 || evaluate_expression(root->rnode) != INT_MAX)
+                                        print_immediate_sub_tree(root->rnode);
+                                    else{
+                                        if (evaluate_expression(root->lnode) != 0)
+                                            print_ident_address(root->rnode);
+                                    }
                                     printf("STO\n");
                                     break;
-                                } else {
+                                }
+                                else {
                                     code_recur(root->lnode);
                                     // printf("struct name isa: %s\n", struct_name);
                                     if (root->lnode != NULL && root->lnode->hdr.type == TN_SELECT)
@@ -1473,6 +1497,9 @@ int code_recur(treenode *root) {
                             case PLUS_EQ:
                                 /* Plus equal assignment "+=" */
                                 /* e.g. x += 5; */
+                                if (evaluate_expression(root->rnode) == 0 ){
+                                    break;
+                                }
                                 if (is_immediate_value(root->rnode)) {
                                     if (is_sub_tree_value_is_zero(root)) {
                                         break;
@@ -1725,20 +1752,18 @@ int code_recur(treenode *root) {
                                      root->lnode->hdr.type == TN_SELECT))
                                     printf("IND\n");
                             }
-                            if (evaluate_expression(root->rnode) == 0){
-//                                if (evaluate_expression(root->lnode) != 0)
-//                                    print_correct_method(root);
-                                break;
-                            }
 
-                            code_recur(root->rnode);
-                            if (root->rnode != NULL &&
-                                (root->rnode->hdr.type == TN_IDENT ||
-                                 root->rnode->hdr.type == TN_INDEX ||
-                                 root->rnode->hdr.type == TN_SELECT))
-                                printf("IND\n");
-                            if (evaluate_expression(root->lnode) != 0)
+                            if (evaluate_expression(root->rnode) != 0){
+                                code_recur(root->rnode);
+                                if (root->rnode != NULL &&
+                                    (root->rnode->hdr.type == TN_IDENT ||
+                                     root->rnode->hdr.type == TN_INDEX ||
+                                     root->rnode->hdr.type == TN_SELECT))
+                                    printf("IND\n");
+                            }
+                            if (evaluate_expression(root->lnode) != 0 &&evaluate_expression(root->rnode)){
                                 print_correct_method(root);
+                            }
                             break;
                         case MINUS:
                             /* Minus token "-" */
@@ -1811,8 +1836,10 @@ int code_recur(treenode *root) {
 
                         case STAR:
                             /* multiply token "*" */
+                            // must run on the right node because it checks right operand such as a * 1
                             if (is_operand_is_one(root->rnode)) {
-                                if (get_number_of_variables_in_sub_tree(root->lnode) != 0)
+                                // must run from the root node because it holds the whole expression
+                                if (get_number_of_variables_in_sub_tree(root) != 0)
                                     print_ident_address(root->lnode);
                                 else
                                     printf("LDC 1\n");
@@ -1865,7 +1892,7 @@ int code_recur(treenode *root) {
                                 break;
                             }
                             else if (evaluate_expression(root->lnode) == 0 || evaluate_expression(root->rnode) == 0) {
-                                printf("LDC 0\n");
+//                                printf("LDC 0\n");
                                 break;
 
                             }
@@ -1945,9 +1972,10 @@ int code_recur(treenode *root) {
                                 break;
                             }
                             else if (evaluate_expression(root->lnode) == 1) {
-                                code_recur(root->rnode);
-                                if (!is_immediate_value(root->rnode))
-                                    printf("IND\n");
+                                printf("LDC 1\n");
+//                                code_recur(root->rnode);
+//                                if (!is_immediate_value(root->rnode))
+//                                    printf("IND\n");
 
                                 break;
                             }
@@ -1957,6 +1985,11 @@ int code_recur(treenode *root) {
                             }
                             else if (evaluate_expression(root->rnode) == 1) {
                                 code_recur(root->lnode);
+                                break;
+                            }
+                            else if (is_sub_tree_value_is_zero(root->rnode)){
+                                code_recur(root->rnode);
+                                printf("IND\n");
                                 break;
                             }
                             else {
