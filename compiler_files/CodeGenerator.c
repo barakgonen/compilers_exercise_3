@@ -513,6 +513,10 @@ double evaluate_expression(treenode *root) {
                     /* Divide token "/" */
                     leftSubtreeVal = evaluate_expression(root->lnode);
                     rightSubtreeVal = evaluate_expression(root->rnode);
+                    if ((leftSubtreeVal != 0 && leftSubtreeVal != INT_MAX && rightSubtreeVal == INT_MAX) ||
+                        (leftSubtreeVal == INT_MAX  && rightSubtreeVal != 0 && rightSubtreeVal != INT_MAX) ||
+                        (leftSubtreeVal == INT_MAX && rightSubtreeVal == INT_MAX))
+                        return INT_MAX;
                     return (rightSubtreeVal == 0) ? 0 : leftSubtreeVal / rightSubtreeVal;
                     break;
 
@@ -532,8 +536,10 @@ double evaluate_expression(treenode *root) {
                     rightSubtreeVal = evaluate_expression(root->rnode);
                     if (leftSubtreeVal == 1 && rightSubtreeVal != 0 && rightSubtreeVal <= INT_MAX)
                         return rightSubtreeVal;
-                    if (rightSubtreeVal == 1 && leftSubtreeVal != 0 && leftSubtreeVal <= INT_MAX)
+                    else if (rightSubtreeVal == 1 && leftSubtreeVal != 0 && leftSubtreeVal <= INT_MAX)
                         return leftSubtreeVal;
+                    else if (leftSubtreeVal == INT_MAX && rightSubtreeVal == INT_MAX)
+                        return INT_MAX;
 
                     return evaluate_expression(root->lnode) && evaluate_expression(root->rnode);
                     break;
@@ -710,13 +716,13 @@ bool is_sub_tree_value_is_zero(const treenode *root) {
 
     return root != NULL &&
                 // for leaf
-                (root->hdr.which == LEAF_T &&
+                (root->hdr.which == LEAF_T && (root->hdr.type != TN_IDENT)) &&
                 ((root->hdr.type == TN_INT  && ((leafnode *)root)->data.ival == 0)      ||
-                 (root->hdr.type == TN_REAL && ((leafnode *)root)->data.dval == 0.0)    ||
-                 (root->hdr.type == TN_IDENT)))                                         ||
+                (root->hdr.type == TN_REAL && ((leafnode *)root)->data.dval == 0.0)    ||
+                // We changed this condition in order to support cases like a = 3 -f (f is a variable so sub tree is not zero)
+                // For tree
+                (root->hdr.which != LEAF_T && root->rnode != NULL && ((leafnode *) root->rnode)->data.ival == 0));
 
-                 // For tree
-                (root->hdr.which != LEAF_T && root->rnode != NULL && ((leafnode *) root->rnode)->data.ival == 0);
 }
 
 // returns true weather right operand is 0, for cases such as a -= 0
@@ -1777,9 +1783,17 @@ int code_recur(treenode *root) {
                             }
                             if (get_number_of_variables_in_sub_tree(root) == 1 && is_sub_tree_value_is_zero(root->rnode)) {
                                 print_ident_address(root);
-                                int number_of_neg_in_a_row = get_number_of_neg_in_a_row(root);
-                                if (number_of_neg_in_a_row % 2 != 0)
-                                    printf("NEG\n");
+
+                                code_recur(root->rnode);
+                                print_correct_method(root);
+//                                if (get_number_of_variables_in_sub_tree(root->rnode) == 0){
+//                                    printf("VALUE OF RNODE\n");
+//                                } else{
+//                                    printf("VALUE OF LNODE\n");
+//                                }
+//                                int number_of_neg_in_a_row = get_number_of_neg_in_a_row(root);
+//                                if (number_of_neg_in_a_row % 2 == 0)
+//                                    printf("NEG\n");
                                 break;
                             }
 
@@ -1809,14 +1823,14 @@ int code_recur(treenode *root) {
                                     printf("LDC 0\n");
                                 break;
                             }
-                            if (is_operand_is_one(root->rnode)){
-                                print_ident_address(root->lnode);
-
-                                break;
-                            }
                             if (root->hdr.which == LEAF_T){
                                 code_recur(root);
                                 printf("IND\n");
+                                break;
+                            }
+                            if (is_operand_is_one(root->rnode) && root->hdr.tok == DIV){
+                                print_ident_address(root->lnode);
+
                                 break;
                             }
                             code_recur(root->lnode);
@@ -1938,45 +1952,22 @@ int code_recur(treenode *root) {
                             break;
                         case OR:
                             /* Or token "||" */
-//                            if (evaluate_expression(root) != 0) {
-//                                if (evaluate_expression(root->rnode) == 0 && evaluate_expression(root->lnode) != 0){
-//                                    print_ident_address(root->lnode);
-//                                }
-//                                else if (evaluate_expression(root->rnode) != 0 && evaluate_expression(root->lnode) == 0){
-//                                    print_ident_address(root->rnode);
-//                                }
-//                                else if (evaluate_expression(root->rnode) != 0 && evaluate_expression(root->lnode) != 0){
-//                                    print_ident_address(root);
-//                                }
-////                                // where is the constant? and where is the identifier
-////                                printf("LDC 0\n");
-//                                break;
-//                            } else{
-//                                printf("LDC 0\n");
-//                            }
                             if (is_constant(root)){
                                 print_immediate_value(root);
                                 break;
                             }
                             else if (evaluate_expression(root->rnode) == 0 && evaluate_expression(root->lnode) > 100000){
                                 code_recur(root->lnode);
-                                if (!is_immediate_value(root->lnode))
-                                    printf("IND\n");
-                                break;
-                            }
-                            else if (evaluate_expression(root->rnode) == 1) {
-                                printf("LDC 1\n");
-//                                code_recur(root->lnode);
+                                // In comment because we decided those functions preforms logic, and if someone "in the future" will have to use the value stored in that address, he will call "IND"
 //                                if (!is_immediate_value(root->lnode))
 //                                    printf("IND\n");
                                 break;
                             }
-                            else if (evaluate_expression(root->lnode) == 1) {
+                            else if (evaluate_expression(root->rnode) != 0 && evaluate_expression(root->rnode) != INT_MAX) {
                                 printf("LDC 1\n");
-//                                code_recur(root->rnode);
-//                                if (!is_immediate_value(root->rnode))
+//                                code_recur(root->lnode);
+//                                if (!is_immediate_value(root->lnode))
 //                                    printf("IND\n");
-
                                 break;
                             }
                             else if (evaluate_expression(root->lnode) == 1) {
@@ -2161,6 +2152,9 @@ int code_recur(treenode *root) {
                     printf("do_while_statement_%d%s\n", root->hdr.line, ":");
                     code_recur(root->rnode);
                     code_recur(root->lnode);
+                    if (get_number_of_variables_in_sub_tree(root->lnode) == 1){
+                        printf("IND\n");
+                    }
                     printf("FJP end_do_while_%d\n", root->hdr.line);
                     printf("UJP do_while_statement_%d\n", root->hdr.line);
                     printf("end_do_while_%d%s\n", root->hdr.line, ":");
