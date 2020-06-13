@@ -1337,9 +1337,8 @@ int code_recur(treenode *root) {
                         code_recur(root->rnode);
                         printf("end_switch_%d%s\n", root->hdr.line, ":");
                     } else{
-                        if (root->lnode->hdr.which == LEAF_T && root->lnode->hdr.type == TN_INT ||
-                                                                root->lnode->hdr.type == TN_REAL ||
-                                                                root->lnode->hdr.type == TN_EXPR) {
+                        if (root->lnode->hdr.which == LEAF_T && (root->lnode->hdr.type == TN_INT ||
+                                                                root->lnode->hdr.type == TN_REAL)) {
                             int expectedCase = ((leafnode*)root->lnode)->data.ival;
 //                            printf("switch value is: %d\n", expectedCase);
                             treenode* casesList = root->rnode->rnode->rnode;
@@ -1367,6 +1366,72 @@ int code_recur(treenode *root) {
                                     tempCaseLable = casesList->rnode->rnode;
                             }
 //                            printf("BLABLALB\n");
+                        } else if (root->lnode->hdr.type == TN_EXPR) {
+                            /*
+                             * there are 2 options:
+                             * 1. if condition is constant
+                             * 2. if it's not..
+                             */
+                            if (is_constant(root->lnode)){
+                                double evaluated_switch_expression = evaluate_expression(root->lnode);
+                                treenode* casesList = root->rnode->rnode->rnode;
+                                treenode* tempCaseLable = casesList->rnode->rnode;
+                                bool hasFoundCase = false;
+                                while(tempCaseLable != NULL &&
+                                      tempCaseLable->lnode != NULL &&
+                                      tempCaseLable->lnode->rnode != NULL &&
+                                      !hasFoundCase) {
+                                    treenode* tempCaseExpression = tempCaseLable->lnode->rnode;
+                                    // Check if current tempCaseLable is THE case
+                                    if (is_immediate_value(tempCaseExpression) &&
+                                        evaluate_expression(tempCaseExpression) == evaluated_switch_expression)
+                                    {
+//                                    printf("FOUND IT!\n");
+                                        hasFoundCase = true;
+                                        shouldConsiderBreak = false;
+                                        code_recur(tempCaseLable->rnode->rnode);
+                                        shouldConsiderBreak = true;
+                                    }
+                                    else{
+//                                    printf("Case is: %f\n", evaluate_expression(tempCaseExpression));
+                                    }
+                                    casesList = casesList->lnode;
+                                    if (casesList->rnode == NULL && casesList->lnode != NULL)
+                                        tempCaseLable = casesList->lnode->rnode;
+                                    else
+                                        tempCaseLable = casesList->rnode->rnode;
+                                }
+                            }
+                            if (root->lnode->hdr.which == LEAF_T && (root->lnode->hdr.type == TN_INT ||
+                                                                     root->lnode->hdr.type == TN_REAL)) {
+                                int expectedCase = ((leafnode*)root->lnode)->data.ival;
+//                            printf("switch value is: %d\n", expectedCase);
+                                treenode* casesList = root->rnode->rnode->rnode;
+                                treenode* tempCaseLable = casesList->rnode->rnode;
+                                bool hasFoundCase = false;
+                                while(tempCaseLable != NULL && !hasFoundCase) {
+                                    treenode* tempCaseExpression = tempCaseLable->lnode->rnode;
+                                    // Check if current tempCaseLable is THE case
+                                    if (is_immediate_value(tempCaseExpression) &&
+                                        evaluate_expression(tempCaseExpression) == expectedCase)
+                                    {
+//                                    printf("FOUND IT!\n");
+                                        hasFoundCase = true;
+                                        shouldConsiderBreak = false;
+                                        code_recur(tempCaseLable->rnode->rnode);
+                                        shouldConsiderBreak = true;
+                                    }
+                                    else{
+//                                    printf("Case is: %f\n", evaluate_expression(tempCaseExpression));
+                                    }
+                                    casesList = casesList->lnode;
+                                    if (casesList->rnode == NULL && casesList->lnode != NULL)
+                                        tempCaseLable = casesList->lnode->rnode;
+                                    else
+                                        tempCaseLable = casesList->rnode->rnode;
+                                }
+//                            printf("BLABLALB\n");
+                            }
                         }
                     }
                     break;
