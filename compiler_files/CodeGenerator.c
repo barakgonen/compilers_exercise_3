@@ -2252,9 +2252,10 @@ int code_recur(treenode *root) {
                     printf("do_while_statement_%d%s\n", root->hdr.line, ":");
                     code_recur(root->rnode);
                     code_recur(root->lnode);
-                    if (get_number_of_variables_in_sub_tree(root->lnode) == 1){
-                        printf("IND\n");
-                    }
+                    // we found this print problematic (switch a || 0 -> or expression already printed IND for us)
+//                    if (get_number_of_variables_in_sub_tree(root->lnode) == 1){
+//                        printf("IND\n");
+//                    }
                     printf("FJP end_do_while_%d\n", root->hdr.line);
                     printf("UJP do_while_statement_%d\n", root->hdr.line);
                     printf("end_do_while_%d%s\n", root->hdr.line, ":");
